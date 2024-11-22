@@ -1,0 +1,85 @@
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa]ppx/
+[Aa]ppPackages/
+[Oo]ut/
+*.exe
+*.dll
+*.pdb
+*.vshost.exe
+*.mdb
+*.cache
+*.ilk
+*.log
+*.msi
+*.dmp
+*.chm
+*.userosscache
+*.localhistory
+
+# Visual Studio files
+.vs/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# ReSharper files
+_ReSharper*/
+*.DotSettings.user
+
+# Rider files
+.idea/
+*.sln.iml
+
+# User-specific files
+*.rsuser
+*.sln.ide
+*.sln.DotSettings
+
+# Mono Auto Generated Files
+mono_crash.*
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Mac system files
+.DS_Store
+
+# Uncomment if you have tasks.json
+# .vscode/
+
+# Visual Studio Code settings
+.vscode/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Node modules
+node_modules/
+
+# npm package lock
+package-lock.json
+yarn.lock
+
+# Logs
+*.log
+
+# Coverage Directory used by tools like istanbul
+coverage/
+
+# Dependency directories
+packages/
+bin/
+obj/
+
+# Include build/ in case you do not want to checkin your build artifacts
+build/
