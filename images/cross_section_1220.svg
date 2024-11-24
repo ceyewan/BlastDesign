@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1500" height="900">
+	<rect fill="white" width="1500" height="900"/>
+	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-67.5 -0 -0 -67.5 123637 720)" d="M1813.59 10L1813.59 10L1828.3 10L1825.99 0L1812.79 0L1813.59 10"/>
+	<path fill="none" stroke="red" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-67.5 -0 -0 -67.5 123637 720)" d="M1828.31 10L1826 0"/>
+	<path fill="none" stroke="red" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-67.5 -0 -0 -67.5 123637 720)" d="M1828.21 10L1825.9 0"/>
+	<path fill="none" stroke="purple" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-67.5 -0 -0 -67.5 123637 720)" d="M1827.05 10L1825.29 0"/>
+	<path fill="none" stroke="purple" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-67.5 -0 -0 -67.5 123637 720)" d="M1826.85 10L1825.09 0"/>
+	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-67.5 -0 -0 -67.5 123637 720)" d="M1825.25 10L1823.14 -2"/>
+	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-67.5 -0 -0 -67.5 123637 720)" d="M1825.05 10L1822.94 -2"/>
+	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-67.5 -0 -0 -67.5 123637 720)" d="M1822.62 10L1820.5 -2"/>
+	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-67.5 -0 -0 -67.5 123637 720)" d="M1822.42 10L1820.3 -2"/>
+	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-67.5 -0 -0 -67.5 123637 720)" d="M1820.47 10L1818.36 -2"/>
+	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-67.5 -0 -0 -67.5 123637 720)" d="M1820.27 10L1818.16 -2"/>
+	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-67.5 -0 -0 -67.5 123637 720)" d="M1817.84 10L1815.72 -2"/>
+	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-67.5 -0 -0 -67.5 123637 720)" d="M1817.64 10L1815.52 -2"/>
+	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-67.5 -0 -0 -67.5 123637 720)" d="M1815.2 10L1813.09 -2"/>
+	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-67.5 -0 -0 -67.5 123637 720)" d="M1815 10L1812.89 -2"/>
+</svg>
