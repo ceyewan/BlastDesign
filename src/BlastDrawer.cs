@@ -16,8 +16,10 @@ public class BlastDrawer
     {
         BlastDrawer.maxX = maxX; BlastDrawer.maxY = maxY; BlastDrawer.minX = minX; BlastDrawer.minY = minY;
         scale = (float)Math.Min(canvasWidth / (maxX - minX), canvasHeight / (maxY - minY)) * 0.9f;
+        // offsetX = (float)(canvasWidth - ((canvasWidth - (maxX - minX) * scale) / 2 - minX * scale)); // 修改X轴偏移计算
+        offsetY = (float)(canvasHeight - ((canvasHeight - (maxY - minY) * scale) / 2 - minY * scale)); // 修改Y轴偏移计算
         offsetX = (float)((canvasWidth - (maxX - minX) * scale) / 2 - minX * scale);
-        offsetY = (float)((canvasHeight - (maxY - minY) * scale) / 2 - minY * scale);
+        // offsetY = (float)((canvasHeight - (maxY - minY) * scale) / 2 - minY * scale);
         holeSpacing = spacing;
         rowOffset = Math.Abs(offset);
     }
@@ -30,7 +32,7 @@ public class BlastDrawer
         svgCanvas.Clear(SKColors.White);
         svgCanvas.Save();
         svgCanvas.Translate(offsetX, offsetY);
-        svgCanvas.Scale(scale);
+        svgCanvas.Scale(scale, -scale);
         // 绘制多边形
         DrawPolygons(svgCanvas, polygons);
         // 绘制各类炮孔
@@ -47,7 +49,7 @@ public class BlastDrawer
         svgCanvas.Clear(SKColors.White);
         svgCanvas.Save();
         svgCanvas.Translate(offsetX, offsetY);
-        svgCanvas.Scale(scale);
+        svgCanvas.Scale(scale, -scale);
         // 绘制连接线
         bool firstFlag = true;
         foreach (var line in blastLines)
@@ -57,15 +59,15 @@ public class BlastDrawer
                 if (firstFlag)
                 {
                     firstFlag = false;
-                    startPoint = new Point3D(line[1].X, maxY, 0);
+                    startPoint = new Point3D(line[1].X, minY, 0);
                     line[0] = startPoint;
                 }
                 else
                 {
                     DrawArrow(svgCanvas,
                         new SKPoint((float)startPoint.X, (float)startPoint.Y),
-                        new SKPoint((float)line[1].X, (float)maxY));
-                    line[0] = new Point3D(line[1].X, maxY, 0);
+                        new SKPoint((float)line[1].X, (float)minY));
+                    line[0] = new Point3D(line[1].X, minY, 0);
                 }
             }
             DrawArrow(svgCanvas,
@@ -89,7 +91,7 @@ public class BlastDrawer
         canvas.Clear(SKColors.White);
         canvas.Save();
         canvas.Translate(offsetX, offsetY);
-        canvas.Scale(scale);
+        canvas.Scale(scale, -scale);
 
         // 绘制边界多边形
         DrawBoundaryPolygon(canvas, polygons[0]);
@@ -324,6 +326,7 @@ public class BlastDrawer
         }
         scale = (float)Math.Min(canvasWidth / (maxX - minX), canvasHeight / (maxY - minY)) * 0.9f;
         offsetX = (float)((canvasWidth - (maxX - minX) * scale) / 2 - minX * scale);
+        offsetX = (float)(canvasWidth - ((canvasWidth - (maxX - minX) * scale) / 2 - minX * scale)); // 修改X轴偏移计算
         offsetY = (float)(canvasHeight - ((canvasHeight - (maxY - minY) * scale) / 2 - minY * scale)); // 修改Y轴偏移计算
 
         Console.WriteLine($"maxX: {maxX}, maxY: {maxY}, minX: {minX}, minY: {minY}");
@@ -331,7 +334,7 @@ public class BlastDrawer
 
         svgCanvas.Save();
         svgCanvas.Translate(offsetX, offsetY); // 先平移
-        svgCanvas.Scale(scale, -scale);        // 在Y轴方向上使用负缩放来实现翻转
+        svgCanvas.Scale(-scale, -scale);        // 在Y轴方向上使用负缩放来实现翻转
 
         // 绘制剖面图
         DrawCrossSectionEdges(svgCanvas, newEdges);

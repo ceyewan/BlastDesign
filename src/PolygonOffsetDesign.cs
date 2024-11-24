@@ -376,6 +376,25 @@ public class PreSplitPolygon : BasePolygon
             AddPoint(point, isContourLineEndHoleEnabled);
         }
     }
+
+    // 查找多边形上到指定点最近的点
+    public Point3D FindNearestPoint(Point3D point)
+    {
+        double minDistance = double.MaxValue;
+        Point3D nearestPoint = new Point3D();
+        foreach (var edge in Edges)
+        {
+            var line3D = new LineSegment3D(edge.Start, edge.End);
+            var closestPoint = line3D.ClosestPointTo(point);
+            double distance = closestPoint.DistanceTo(point);
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                nearestPoint = closestPoint;
+            }
+        }
+        return nearestPoint;
+    }
 }
 
 // 缓冲孔多边形
