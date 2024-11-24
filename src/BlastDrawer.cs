@@ -329,8 +329,8 @@ public class BlastDrawer
         offsetX = (float)(canvasWidth - ((canvasWidth - (maxX - minX) * scale) / 2 - minX * scale)); // 修改X轴偏移计算
         offsetY = (float)(canvasHeight - ((canvasHeight - (maxY - minY) * scale) / 2 - minY * scale)); // 修改Y轴偏移计算
 
-        Console.WriteLine($"maxX: {maxX}, maxY: {maxY}, minX: {minX}, minY: {minY}");
-        Console.WriteLine($"scale: {scale}, offsetX: {offsetX}, offsetY: {offsetY}");
+        // Console.WriteLine($"maxX: {maxX}, maxY: {maxY}, minX: {minX}, minY: {minY}");
+        // Console.WriteLine($"scale: {scale}, offsetX: {offsetX}, offsetY: {offsetY}");
 
         svgCanvas.Save();
         svgCanvas.Translate(offsetX, offsetY); // 先平移

@@ -241,7 +241,7 @@ public class ExtendedPolygon
             }
             openPath.Add(new PointD(edges.Last().End.X, edges.Last().End.Y));
         }
-        Console.WriteLine("ExtendedPolygon created.");
+        // Console.WriteLine("ExtendedPolygon created.");
     }
 
     public PathsD Offset(double distance)

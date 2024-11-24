@@ -8,23 +8,190 @@ public class BlastFactory
 {
     private readonly Config _config;
     // 底部多边形
-    PreSplitPolygon bottomPolygon = null!;
+    private PreSplitPolygon bottomPolygon = null!;
     // 确定爆破线的多边形
-    List<BasePolygon> blastPolygons = new List<BasePolygon>();
+    private List<BasePolygon> blastPolygons = new List<BasePolygon>();
     // 爆破孔，包括预裂孔、缓冲孔和主爆孔，平面位置
-    List<HashSet<Point3D>> blastHolePositions = new List<HashSet<Point3D>>();
+    private List<HashSet<Point3D>> blastHolePositions = new List<HashSet<Point3D>>();
     // 炮孔位置，包括顶部和底部
-    List<List<HolePosition>> holePositionLists = new List<List<HolePosition>>();
+    private List<List<HolePosition>> holePositionLists = new List<List<HolePosition>>();
     // 爆破时间
-    Dictionary<Point3D, double> blastTiming = new Dictionary<Point3D, double>();
+    private Dictionary<Point3D, double> blastTiming = new Dictionary<Point3D, double>();
     // 爆破线
-    List<List<Point3D>> blastLinePoints = new List<List<Point3D>>();
+    private List<List<Point3D>> blastLinePoints = new List<List<Point3D>>();
     // 绘画类
     private BlastDrawer blastDrawer;
     // 最大最小坐标
-    double maxX = 0, maxY = 0, minX = 1e9, minY = 1e9;
+    private double maxX = 0, maxY = 0, minX = 1e9, minY = 1e9;
 
-    public class Point3DEqualityComparer : IEqualityComparer<Point3D>
+    /// <summary>
+    /// 构造函数，初始化 BlastFactory 并处理多边形和孔位。
+    /// </summary>
+    /// <param name="config">配置信息</param>
+    public BlastFactory(Config config)
+    {
+        _config = config;
+        ProcessPolygons(CreatePreSplitPolygon());
+        AssignHolePosition();
+        var holeTiming = new HoleTiming(holePositionLists, _config);
+        (blastTiming, blastLinePoints) = holeTiming.TimingHoles();
+        blastDrawer = new BlastDrawer(maxX, maxY, minX, minY, _config.PreSplitHoleSpacing, _config.PreSplitHoleOffset);
+    }
+
+    /// <summary>
+    /// 打印所有孔的位置和信息。
+    /// </summary>
+    public void PrintHoles()
+    {
+        Console.WriteLine("预裂孔：");
+        foreach (var hole in holePositionLists[0])
+        {
+            Console.WriteLine($"顶部坐标：({hole.Top.X:F2}, {hole.Top.Y:F2}, {hole.Top.Z:F2})，底部坐标：({hole.Bottom.X:F2}, {hole.Bottom.Y:F2}, {hole.Bottom.Z:F2})，孔类型：{hole.HoleStyle}，行号：{hole.RowId}，列号：{hole.ColumnId}，孔号：{hole.HoleId}");
+        }
+        Console.WriteLine("缓冲孔：");
+        foreach (var hole in holePositionLists[1])
+        {
+            Console.WriteLine($"顶部坐标：({hole.Top.X:F2}, {hole.Top.Y:F2}, {hole.Top.Z:F2})，底部坐标：({hole.Bottom.X:F2}, {hole.Bottom.Y:F2}, {hole.Bottom.Z:F2})，孔类型：{hole.HoleStyle}，行号：{hole.RowId}，列号：{hole.ColumnId}，孔号：{hole.HoleId}");
+        }
+        Console.WriteLine("主爆孔：");
+        for (int i = 2; i < holePositionLists.Count; i++)
+        {
+            Console.WriteLine($"第{i - 1}个多边形的主爆孔：");
+            foreach (var hole in holePositionLists[i])
+            {
+                Console.WriteLine($"顶部坐标：({hole.Top.X:F2}, {hole.Top.Y:F2}, {hole.Top.Z:F2})，底部坐标：({hole.Bottom.X:F2}, {hole.Bottom.Y:F2}, {hole.Bottom.Z:F2})，孔类型：{hole.HoleStyle}，行号：{hole.RowId}，列号：{hole.ColumnId}，孔号：{hole.HoleId}");
+            }
+        }
+    }
+
+    /// <summary>
+    /// 获取孔位信息。
+    /// </summary>
+    /// <returns>孔位信息</returns>
+    public List<List<HolePosition>> GetHoles()
+    {
+        return holePositionLists;
+    }
+
+    /// <summary>
+    /// 绘制孔设计的平面图并保存为 SVG 文件。
+    /// </summary>
+    /// <param name="filePath">文件路径，默认为 "./images/hole_design.svg"</param>
+    public void DrawHoleDesign(string filePath = "./images/hole_design.svg")
+    {
+        blastDrawer.DrawHoleDesign(blastPolygons, blastHolePositions, filePath);
+    }
+
+    /// <summary>
+    /// 绘制爆破网络图并保存为 SVG 文件。
+    /// </summary>
+    /// <param name="filePath">文件路径，默认为 "./images/timing_network.svg"</param>
+    public void DrawTiming(string filePath = "./images/timing_network.svg")
+    {
+        blastDrawer.DrawTimingNetwork(blastTiming, blastLinePoints, filePath);
+    }
+
+    /// <summary>
+    /// 绘制爆破过程的 GIF 动画。
+    /// </summary>
+    public void DrawGif()
+    {
+        var uniqueTimes = blastTiming.Values.Distinct().OrderBy(t => t).ToList();
+        Directory.CreateDirectory("frames");
+        for (int i = 0; i < uniqueTimes.Count; i++)
+        {
+            var currentTime = uniqueTimes[i];
+            var previousTime = i > 0 ? uniqueTimes[i - 1] : 0;
+            blastDrawer.DrawAnimationFrame(
+                blastPolygons,
+                blastTiming,
+                currentTime,
+                previousTime,
+                $"frames/{i + 1:000}.png");
+        }
+    }
+
+    /// <summary>
+    /// 绘制剖面图并保存到指定文件夹。
+    /// </summary>
+    /// <param name="folderPath">文件夹路径，默认为 "./images"</param>
+    public void DrawCrossSection(string folderPath = "./images")
+    {
+        // 确保文件夹路径以 '/' 结尾
+        if (!folderPath.EndsWith("/"))
+        {
+            folderPath += "/";
+        }
+        // 创建文件夹（如果不存在）
+        if (!Directory.Exists(folderPath))
+        {
+            Directory.CreateDirectory(folderPath);
+        }
+        foreach (var x in _config.CrossSectionXCoordinates)
+        {
+            // 通过顶部多边形和底部多边形计算出剖面图的边界
+            List<Point3D> newEdges = CalculateCrossSectionEdges(blastPolygons[0], bottomPolygon, x);
+            var denominator = newEdges[1].Y - newEdges[2].Y;
+            double angle;
+            if (denominator != 0)
+            {
+                angle = Math.Atan(-(newEdges[1].Z - newEdges[2].Z) / denominator) * 180 / Math.PI;
+            }
+            else
+            {
+                angle = 90.0;
+            }
+            angle = angle * 180 / Math.PI;
+            // 找到距离 X 最近的炮孔对应的 Y 坐标
+            List<Point3D> newHoles = FindNearestBlastHoles(blastHolePositions, x);
+            List<List<Point3D>> newLines = new List<List<Point3D>>();
+            for (int i = 0; i < newHoles.Count; i++)
+            {
+                int index = (i < 2) ? i : 2;
+                var hole1 = new Point3D(newHoles[i].X, newHoles[i].Y, newHoles[i].Z);
+                var hole2 = new Point3D(newHoles[i].X, newHoles[i].Y - _config.BlastHoleDiameters[index], newHoles[i].Z);
+                var diameter = hole1.Z - bottomPolygon.Edges.First().Start.Z + (i > 1 ? _config.Depth : 0);
+                var inclinationAngle = _config.InclinationAngle;
+                var newLine = CalculateBlastHoleLine(hole1, diameter, index == 0 ? angle : inclinationAngle);
+                newLines.Add(newLine);
+                newLine = CalculateBlastHoleLine(hole2, diameter, index == 0 ? angle : inclinationAngle);
+                newLines.Add(newLine);
+            }
+            blastDrawer.DrawCrossSection(newEdges, newLines, folderPath + "cross_section_" + x + ".svg");
+        }
+    }
+
+    /// <summary>
+    /// 绘制炮孔装药结构图并保存到指定文件夹。
+    /// </summary>
+    /// <param name="folderPath">文件夹路径，默认为 "./images"</param>
+    public void DrawChargeStructure(string folderPath = "./images")
+    {
+        // 确保文件夹路径以 '/' 结尾
+        if (!folderPath.EndsWith("/"))
+        {
+            folderPath += "/";
+        }
+        // 创建文件夹（如果不存在）
+        if (!Directory.Exists(folderPath))
+        {
+            Directory.CreateDirectory(folderPath);
+        }
+        // Console.WriteLine("绘制预裂孔装药结构图：");
+        var newHoleChargeDrawers = new HoleChargeDrawing(_config.PreSplitHoleChargeConfig[0], _config.PreSplitHoleChargeConfig[1], _config.PreSplitHoleChargeConfig[2], _config.PreSplitHoleChargeConfig[3], _config.PreSplitHoleChargeConfig[4]);
+        newHoleChargeDrawers.DrawAndSave(folderPath + "pre_split_hole_charge_structure.svg");
+        // Console.WriteLine("绘制缓冲孔装药结构图：");
+        newHoleChargeDrawers = new HoleChargeDrawing(_config.BufferHoleChargeConfig[0], _config.BufferHoleChargeConfig[1], _config.BufferHoleChargeConfig[2], _config.BufferHoleChargeConfig[3], _config.BufferHoleChargeConfig[4]);
+        newHoleChargeDrawers.DrawAndSave(folderPath + "buffer_hole_charge_structure.svg");
+        // Console.WriteLine("绘制主爆孔装药结构图：");
+        newHoleChargeDrawers = new HoleChargeDrawing(_config.MainBlastHoleChargeConfig[0], _config.MainBlastHoleChargeConfig[1], _config.MainBlastHoleChargeConfig[2], _config.MainBlastHoleChargeConfig[3], _config.MainBlastHoleChargeConfig[4]);
+        newHoleChargeDrawers.DrawAndSave(folderPath + "main_blast_hole_charge_structure.svg");
+    }
+
+    // 私有辅助方法
+
+    // 3D 点相等性比较器，用于比较两个 Point3D 对象是否相等。
+    private class Point3DEqualityComparer : IEqualityComparer<Point3D>
     {
         public bool Equals(Point3D v1, Point3D v2)
         {
@@ -38,16 +205,6 @@ public class BlastFactory
             int hashZ = ((int)(v.Z / Constant.ErrorThreshold)).GetHashCode();
             return hashX ^ hashY ^ hashZ;
         }
-    }
-
-    public BlastFactory(Config config)
-    {
-        _config = config;
-        ProcessPolygons(CreatePreSplitPolygon());
-        AssignHolePosition();
-        var holeTiming = new HoleTiming(holePositionLists, _config);
-        (blastTiming, blastLinePoints) = holeTiming.TimingHoles();
-        blastDrawer = new BlastDrawer(maxX, maxY, minX, minY, _config.PreSplitHoleSpacing, _config.PreSplitHoleOffset);
     }
 
     private PreSplitPolygon CreatePreSplitPolygon()
@@ -129,6 +286,7 @@ public class BlastFactory
         }
     }
 
+    // 分配设置孔位
     private void AssignHolePosition()
     {
         int count = 1;
@@ -167,110 +325,6 @@ public class BlastFactory
             }
         }
     }
-    public void PrintHoles()
-    {
-        Console.WriteLine("预裂孔：");
-        foreach (var hole in holePositionLists[0])
-        {
-            Console.WriteLine($"顶部坐标：({hole.Top.X:F2}, {hole.Top.Y:F2}, {hole.Top.Z:F2})，底部坐标：({hole.Bottom.X:F2}, {hole.Bottom.Y:F2}, {hole.Bottom.Z:F2})，孔类型：{hole.HoleStyle}，行号：{hole.RowId}，列号：{hole.ColumnId}，孔号：{hole.HoleId}");
-        }
-        Console.WriteLine("缓冲孔：");
-        foreach (var hole in holePositionLists[1])
-        {
-            Console.WriteLine($"顶部坐标：({hole.Top.X:F2}, {hole.Top.Y:F2}, {hole.Top.Z:F2})，底部坐标：({hole.Bottom.X:F2}, {hole.Bottom.Y:F2}, {hole.Bottom.Z:F2})，孔类型：{hole.HoleStyle}，行号：{hole.RowId}，列号：{hole.ColumnId}，孔号：{hole.HoleId}");
-        }
-        Console.WriteLine("主爆孔：");
-        for (int i = 2; i < holePositionLists.Count; i++)
-        {
-            Console.WriteLine($"第{i - 1}个多边形的主爆孔：");
-            foreach (var hole in holePositionLists[i])
-            {
-                Console.WriteLine($"顶部坐标：({hole.Top.X:F2}, {hole.Top.Y:F2}, {hole.Top.Z:F2})，底部坐标：({hole.Bottom.X:F2}, {hole.Bottom.Y:F2}, {hole.Bottom.Z:F2})，孔类型：{hole.HoleStyle}，行号：{hole.RowId}，列号：{hole.ColumnId}，孔号：{hole.HoleId}");
-            }
-        }
-    }
-
-    // 绘制平面图
-    public void DrawHoleDesign(string filePath = "./images/hole_design.svg")
-    {
-        blastDrawer.DrawHoleDesign(blastPolygons, blastHolePositions, filePath);
-    }
-
-    // 绘制爆破网络图
-    public void DrawTiming(string filePath = "./images/timing_network.svg")
-    {
-        blastDrawer.DrawTimingNetwork(blastTiming, blastLinePoints, filePath);
-    }
-
-    // 绘制 Gif 备选图片
-    public void DrawGif()
-    {
-        var uniqueTimes = blastTiming.Values.Distinct().OrderBy(t => t).ToList();
-        Directory.CreateDirectory("frames");
-        for (int i = 0; i < uniqueTimes.Count; i++)
-        {
-            var currentTime = uniqueTimes[i];
-            var previousTime = i > 0 ? uniqueTimes[i - 1] : 0;
-            blastDrawer.DrawAnimationFrame(
-                blastPolygons,
-                blastTiming,
-                currentTime,
-                previousTime,
-                $"frames/{i + 1:000}.png");
-        }
-    }
-
-    // 绘制剖面图
-    public void DrawCrossSection(string folderPath = "./images")
-    {
-        // 确保文件夹路径以 '/' 结尾
-        if (!folderPath.EndsWith("/"))
-        {
-            folderPath += "/";
-        }
-        // 创建文件夹（如果不存在）
-        if (!Directory.Exists(folderPath))
-        {
-            Directory.CreateDirectory(folderPath);
-        }
-        foreach (var x in _config.CrossSectionXCoordinates)
-        {
-            // 通过顶部多边形和底部多边形计算出剖面图的边界
-            List<Point3D> newEdges = CalculateCrossSectionEdges(blastPolygons[0], bottomPolygon, x);
-            var denominator = newEdges[1].Y - newEdges[2].Y;
-            double angle;
-            if (denominator != 0)
-            {
-                angle = Math.Atan(-(newEdges[1].Z - newEdges[2].Z) / denominator) * 180 / Math.PI;
-            }
-            else
-            {
-                angle = 90.0;
-            }
-            angle = angle * 180 / Math.PI;
-            // 找到距离 X 最近的炮孔对应的 Y 坐标
-            List<Point3D> newHoles = FindNearestBlastHoles(blastHolePositions, x);
-            List<List<Point3D>> newLines = new List<List<Point3D>>();
-            for (int i = 0; i < newHoles.Count; i++)
-            {
-                int index = (i < 2) ? i : 2;
-                var hole1 = new Point3D(newHoles[i].X, newHoles[i].Y, newHoles[i].Z);
-                var hole2 = new Point3D(newHoles[i].X, newHoles[i].Y - _config.BlastHoleDiameters[index], newHoles[i].Z);
-                var diameter = hole1.Z - bottomPolygon.Edges.First().Start.Z + (i > 1 ? _config.Depth : 0);
-                var inclinationAngle = _config.InclinationAngle;
-                var newLine = CalculateBlastHoleLine(hole1, diameter, index == 0 ? angle : inclinationAngle);
-                newLines.Add(newLine);
-                newLine = CalculateBlastHoleLine(hole2, diameter, index == 0 ? angle : inclinationAngle);
-                newLines.Add(newLine);
-            }
-            // 输出剖面图的炮孔线条
-            foreach (var line in newLines)
-            {
-                Console.WriteLine($"剖面图的炮孔线条：({line[0].X:F2}, {line[0].Y:F2}, {line[0].Z:F2}) -> ({line[1].X:F2}, {line[1].Y:F2}, {line[1].Z:F2})");
-            }
-            blastDrawer.DrawCrossSection(newEdges, newLines, folderPath + "cross_section_" + x + ".svg");
-        }
-    }
 
     // 计算剖面图的边界
     private List<Point3D> CalculateCrossSectionEdges(BasePolygon topPolygon, BasePolygon bottomPolygon, double x)
@@ -303,11 +357,6 @@ public class BlastFactory
             newPoints[2] = newPoints[3];
             newPoints[3] = temp;
         }
-        // 输出剖面图的边界
-        foreach (var point in newPoints)
-        {
-            Console.WriteLine($"剖面图的边界：({point.X:F2}, {point.Y:F2}, {point.Z:F2})");
-        }
         return newPoints;
     }
 
@@ -331,34 +380,10 @@ public class BlastFactory
     }
 
     // 计算炮孔线条的坐标，从起点开始，倾斜角度为 inclinationAngle 度，终点在下底面上
-    public List<Point3D> CalculateBlastHoleLine(Point3D hole, double diameter, double inclinationAngle)
+    private List<Point3D> CalculateBlastHoleLine(Point3D hole, double diameter, double inclinationAngle)
     {
         var angle = inclinationAngle * Math.PI / 180;
         var end = new Point3D(hole.X, hole.Y + diameter / Math.Tan(angle), hole.Z - diameter);
         return new List<Point3D> { hole, end };
-    }
-
-    // 绘制炮孔装药结构图
-    public void DrawChargeStructure(string folderPath = "./images")
-    {
-        // 确保文件夹路径以 '/' 结尾
-        if (!folderPath.EndsWith("/"))
-        {
-            folderPath += "/";
-        }
-        // 创建文件夹（如果不存在）
-        if (!Directory.Exists(folderPath))
-        {
-            Directory.CreateDirectory(folderPath);
-        }
-        Console.WriteLine("绘制预裂孔装药结构图：");
-        var newHoleChargeDrawers = new HoleChargeDrawing(_config.PreSplitHoleChargeConfig[0], _config.PreSplitHoleChargeConfig[1], _config.PreSplitHoleChargeConfig[2], _config.PreSplitHoleChargeConfig[3], _config.PreSplitHoleChargeConfig[4]);
-        newHoleChargeDrawers.DrawAndSave(folderPath + "pre_split_hole_charge_structure.svg");
-        Console.WriteLine("绘制缓冲孔装药结构图：");
-        newHoleChargeDrawers = new HoleChargeDrawing(_config.BufferHoleChargeConfig[0], _config.BufferHoleChargeConfig[1], _config.BufferHoleChargeConfig[2], _config.BufferHoleChargeConfig[3], _config.BufferHoleChargeConfig[4]);
-        newHoleChargeDrawers.DrawAndSave(folderPath + "buffer_hole_charge_structure.svg");
-        Console.WriteLine("绘制主爆孔装药结构图：");
-        newHoleChargeDrawers = new HoleChargeDrawing(_config.MainBlastHoleChargeConfig[0], _config.MainBlastHoleChargeConfig[1], _config.MainBlastHoleChargeConfig[2], _config.MainBlastHoleChargeConfig[3], _config.MainBlastHoleChargeConfig[4]);
-        newHoleChargeDrawers.DrawAndSave(folderPath + "main_blast_hole_charge_structure.svg");
     }
 }
