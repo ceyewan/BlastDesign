@@ -103,7 +103,7 @@ public class HoleChargeDrawing
     public void DrawAndSave(string filePath)
     {
         using var stream = new SKFileWStream(filePath);
-        var rect = SKRect.Create(1000, 300);
+        var rect = SKRect.Create(1500, 300);
         canvas = SKSvgCanvas.Create(rect, stream);
         canvas.Clear(SKColors.White);
 
