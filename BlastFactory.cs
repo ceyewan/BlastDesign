@@ -141,7 +141,6 @@ public class BlastFactory
             {
                 angle = 90.0;
             }
-            angle = angle * 180 / Math.PI;
             // 找到距离 X 最近的炮孔对应的 Y 坐标
             List<Point3D> newHoles = FindNearestBlastHoles(blastHolePositions, x);
             List<List<Point3D>> newLines = new List<List<Point3D>>();
@@ -188,6 +187,35 @@ public class BlastFactory
         newHoleChargeDrawers.DrawAndSave(folderPath + "main_blast_hole_charge_structure.svg");
     }
 
+    /// <summary>
+    /// 获取最后一行有炮孔的炮孔排，并计算其上炮孔到自由线的最小距离的最大最小值。
+    /// </summary>
+    /// <returns>最后一行有炮孔的炮孔排的最小距离的最大最小值</returns>
+    public (double, double) GetLastRowHoleDistance()
+    {
+        // 取从后往前第一个不为空的炮孔排
+        var lastRowHoles = holePositionLists.Last(row => row.Any());
+        double maxDistance = 0;
+        double minDistance = 1e9;
+        foreach (var hole in lastRowHoles)
+        {
+            var distance = ((PreSplitPolygon)blastPolygons[0]).FindNearestDistanceToFreeEdge(hole.Top);
+            maxDistance = Math.Max(maxDistance, distance);
+            minDistance = Math.Min(minDistance, distance);
+        }
+        return (maxDistance, minDistance);
+    }
+
+    /// <summary>
+    /// 获取主爆孔的排数
+    /// </summary>
+    public int GetMainBlastHoleRows()
+    {
+        // 排除没有孔的情况
+        int nonEmptyRows = holePositionLists.Count(row => row.Any());
+        return nonEmptyRows - 2;
+    }
+
     // 私有辅助方法
 
     // 3D 点相等性比较器，用于比较两个 Point3D 对象是否相等。
@@ -217,8 +245,8 @@ public class BlastFactory
             {
                 var start = ParsePoint(points[i]);
                 var end = ParsePoint(points[i + 1]);
-                var isContour = styles[i] == "3";
-                edges.Add(new Edge(start, end, isContour));
+                var style = int.Parse(styles[i]);
+                edges.Add(new Edge(start, end, style));
             }
             return edges;
         }
@@ -366,6 +394,10 @@ public class BlastFactory
         List<Point3D> newHoles = new List<Point3D>();
         foreach (var blastHoles in blastHolePositions)
         {
+            if (!blastHoles.Any())
+            {
+                continue;
+            }
             var nearestHole = blastHoles.OrderBy(hole => Math.Abs(hole.X - x)).First();
             // 距离太远，不绘制
             if (Math.Abs(nearestHole.X - x) > _config.MainBlastHoleSpacing / 2)

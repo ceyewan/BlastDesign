@@ -10,12 +10,12 @@ public class Edge
 {
     public Point3D Start { get; set; }
     public Point3D End { get; set; }
-    public bool IsContour { get; set; }
-    public Edge(Point3D start, Point3D end, bool isContour = true)
+    public int style { get; set; }
+    public Edge(Point3D start, Point3D end, int Style = 1)
     {
         Start = start;
         End = end;
-        IsContour = isContour;
+        style = Style;
     }
 
     public double Length()
@@ -111,7 +111,7 @@ public abstract class BasePolygon
             {
                 var start = new Point3D(path[i].x, path[i].y, Edges.First().Start.Z);
                 var end = new Point3D(path[(i + 1) % path.Count].x, path[(i + 1) % path.Count].y, Edges.First().Start.Z);
-                newEdges.Add(new Edge(start, end, true));
+                newEdges.Add(new Edge(start, end, 3));
             }
         }
         return newEdges;
@@ -156,7 +156,7 @@ public abstract class BasePolygon
     {
         foreach (var edge in Edges)
         {
-            if (!edge.IsContour)
+            if (edge.style == 1)
             {
                 if (DistanceToEdge(point, edge) < Constant.ErrorThreshold)
                 {
@@ -280,7 +280,7 @@ public class PreSplitPolygon : BasePolygon
     public override void ArrangeHoles(double spacing, bool isContourLineEndHoleEnabled = false)
     {
         // 仅在轮廓边上布置炮孔
-        foreach (var edge in Edges.Where(e => e.IsContour))
+        foreach (var edge in Edges.Where(e => e.style == 3))
         {
             ArrangeHoleOnEdge(edge, spacing, isContourLineEndHoleEnabled);
         }
@@ -289,7 +289,7 @@ public class PreSplitPolygon : BasePolygon
     // 获取自由边方法，供其他多边形使用
     public List<Edge> GetFreeEdges()
     {
-        return Edges.Where(e => !e.IsContour).ToList();
+        return Edges.Where(e => e.style == 1).ToList();
     }
 
     // 创建 extendPolygon 对象，供其他多边形使用
@@ -304,16 +304,16 @@ public class PreSplitPolygon : BasePolygon
         var newEdges = new List<Edge>();
         foreach (var edge in Edges)
         {
-            if (edge.IsContour)
+            if (edge.style == 3)
             {
                 // 如果是第一条轮廓线，修改起点然后添加
                 if (edge.Start.Equals(FindFirstAndLastContour().Item1.Start))
                 {
-                    newEdges.Add(new Edge(newStart, edge.End, true));
+                    newEdges.Add(new Edge(newStart, edge.End, 3));
                 } // 如果是最后一条轮廓线，修改终点然后添加
                 else if (edge.End.Equals(FindFirstAndLastContour().Item2.End))
                 {
-                    newEdges.Add(new Edge(edge.Start, newEnd, true));
+                    newEdges.Add(new Edge(edge.Start, newEnd, 3));
                 }
                 else
                 {
@@ -359,8 +359,8 @@ public class PreSplitPolygon : BasePolygon
     // 找到多边形的第一和最后一个轮廓线
     private (Edge, Edge) FindFirstAndLastContour()
     {
-        Edge first = Edges.First(e => e.IsContour);
-        Edge last = Edges.Last(e => e.IsContour);
+        Edge first = Edges.First(e => e.style == 3);
+        Edge last = Edges.Last(e => e.style == 3);
         return (first, last);
     }
 
@@ -394,6 +394,25 @@ public class PreSplitPolygon : BasePolygon
             }
         }
         return nearestPoint;
+    }
+
+    // 查找多边形自由边到指定点的最近距离
+    public double FindNearestDistanceToFreeEdge(Point3D point)
+    {
+        double minDistance = double.MaxValue;
+        foreach (var edge in Edges)
+        {
+            if (edge.style.Equals(1))
+            {
+                var line3D = new LineSegment3D(edge.Start, edge.End);
+                double distance = line3D.ClosestPointTo(point).DistanceTo(point);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                }
+            }
+        }
+        return minDistance;
     }
 }
 

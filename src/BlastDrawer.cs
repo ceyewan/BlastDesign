@@ -199,7 +199,8 @@ public class BlastDrawer
         var paint = new SKPaint
         {
             IsAntialias = true,
-            Style = SKPaintStyle.Fill
+            Style = SKPaintStyle.Stroke,
+            StrokeWidth = (float)holeSpacing / 20
         };
         // 绘制预裂孔
         paint.Color = SKColors.Red;
@@ -223,7 +224,7 @@ public class BlastDrawer
             canvas.DrawCircle(
                 (float)hole.X,
                 (float)hole.Y,
-                (float)holeSpacing / 10,
+                (float)holeSpacing / 5,
                 paint);
         }
     }
@@ -233,7 +234,7 @@ public class BlastDrawer
     {
         using var paint = new SKPaint
         {
-            Color = SKColors.LightGray,
+            Color = SKColors.DimGray,
             StrokeWidth = (float)holeSpacing / 20,
             Style = SKPaintStyle.Stroke
         };
@@ -280,10 +281,13 @@ public class BlastDrawer
             paint.TextSize = (float)holeSpacing / 5;
             paint.Typeface = SKTypeface.Default; // 设置默认字体
             paint.TextAlign = SKTextAlign.Center;
+            canvas.Save();
+            canvas.Scale(1, -1);
             canvas.DrawText($"{blastTime} ms",
                 (float)holePosition.X,
-                (float)holePosition.Y - (float)rowOffset / 5,
+                -(float)holePosition.Y - (float)rowOffset / 5,
                 paint);
+            canvas.Restore();
         }
     }
 
