@@ -324,8 +324,6 @@ public class BlastFactory
         }
     }
 
-    // 处理多边形，偏移并布点，没有永久轮廓线的情况
-    
 
     // 分配设置孔位
     private void AssignHolePosition()
