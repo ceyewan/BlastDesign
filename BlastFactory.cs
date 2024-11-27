@@ -127,36 +127,42 @@ public class BlastFactory
         {
             Directory.CreateDirectory(folderPath);
         }
+        var crossSection = new CrossSection(_config);
+        var count = 0;
         foreach (var x in _config.CrossSectionXCoordinates)
         {
             // 通过顶部多边形和底部多边形计算出剖面图的边界
-            List<Point3D> newEdges = CalculateCrossSectionEdges(blastPolygons[0], bottomPolygon, x);
-            var denominator = newEdges[1].Y - newEdges[2].Y;
-            double angle;
-            if (denominator != 0)
-            {
-                angle = Math.Atan(-(newEdges[1].Z - newEdges[2].Z) / denominator) * 180 / Math.PI;
-            }
-            else
-            {
-                angle = 90.0;
-            }
+            List<Point3D> newEdges = crossSection.CalculateCrossSectionEdges(blastPolygons[0], bottomPolygon, x);
             // 找到距离 X 最近的炮孔对应的 Y 坐标
-            List<Point3D> newHoles = FindNearestBlastHoles(blastHolePositions, x);
-            List<List<Point3D>> newLines = new List<List<Point3D>>();
-            for (int i = 0; i < newHoles.Count; i++)
+            List<Point3D> newHoles = crossSection.FindNearestBlastHoles(blastHolePositions, x);
+            // 计算轮廓线的角度
+            var angle = Math.Atan2(newEdges[1].Z - newEdges[2].Z, -newEdges[1].Y + newEdges[2].Y);
+            angle = angle * 180 / Math.PI;
+            Console.WriteLine($"剖面图的角度：{angle:F2}");
+            var hole1 = new Point3D(newHoles[0].X, newHoles[0].Y, newHoles[0].Z);
+            var hole2 = new Point3D(newHoles[0].X, newHoles[0].Y - _config.BlastHoleDiameters[0], newHoles[0].Z);
+            var newLine1 = crossSection.CalculateBlastHoleLine(hole1, hole1.Z - bottomPolygon.Edges.First().Start.Z, angle);
+            var newLine2 = crossSection.CalculateBlastHoleLine(hole2, hole1.Z - bottomPolygon.Edges.First().Start.Z, angle);
+            List<List<Point3D>> newLines = new List<List<Point3D>> { newLine1, newLine2 };
+            hole1 = new Point3D(newHoles[1].X, newHoles[1].Y, newHoles[1].Z);
+            hole2 = new Point3D(newHoles[1].X, newHoles[1].Y - _config.BlastHoleDiameters[1], newHoles[1].Z);
+            newLine1 = crossSection.CalculateBlastHoleLine(hole1, hole1.Z - bottomPolygon.Edges.First().Start.Z, angle);
+            newLine2 = crossSection.CalculateBlastHoleLine(hole2, hole1.Z - bottomPolygon.Edges.First().Start.Z, angle);
+            newLines.AddRange(new List<List<Point3D>> { newLine1, newLine2 });
+            var bottomHoles = crossSection.DivideLine(newLine1[1], newEdges[3], newHoles.Count - 2);
+            for (int i = 2; i < newHoles.Count; i++)
             {
-                int index = (i < 2) ? i : 2;
-                var hole1 = new Point3D(newHoles[i].X, newHoles[i].Y, newHoles[i].Z);
-                var hole2 = new Point3D(newHoles[i].X, newHoles[i].Y - _config.BlastHoleDiameters[index], newHoles[i].Z);
-                var diameter = hole1.Z - bottomPolygon.Edges.First().Start.Z + (i > 1 ? _config.Depth : 0);
-                var inclinationAngle = _config.InclinationAngle;
-                var newLine = CalculateBlastHoleLine(hole1, diameter, index == 0 ? angle : inclinationAngle);
+                hole1 = new Point3D(newHoles[i].X, newHoles[i].Y, newHoles[i].Z);
+                hole2 = new Point3D(newHoles[i].X, newHoles[i].Y - _config.BlastHoleDiameters[2], newHoles[i].Z);
+                angle = Math.Atan2(hole1.Z - bottomHoles[i - 2].Z, -hole1.Y + bottomHoles[i - 2].Y);
+                var diameter = hole1.Z - bottomPolygon.Edges.First().Start.Z + (i > 1 ? _config.Depth * Math.Sin(angle) : 0);
+                angle = angle * 180 / Math.PI;
+                var newLine = crossSection.CalculateBlastHoleLine(hole1, diameter, angle);
                 newLines.Add(newLine);
-                newLine = CalculateBlastHoleLine(hole2, diameter, index == 0 ? angle : inclinationAngle);
+                newLine = crossSection.CalculateBlastHoleLine(hole2, diameter, angle);
                 newLines.Add(newLine);
             }
-            blastDrawer.DrawCrossSection(newEdges, newLines, folderPath + "cross_section_" + x + ".svg");
+            blastDrawer.DrawCrossSection(newEdges, newLines, folderPath + "cross_section_" + count++ + ".svg");
         }
     }
 
@@ -267,6 +273,10 @@ public class BlastFactory
         var topEdges = CreateEdges(_config.TopPoints, _config.TopStyle);
         var bottomEdges = CreateEdges(_config.BottomPoints, _config.BottomStyle);
         bottomPolygon = new PreSplitPolygon(bottomEdges);
+        _config.CrossSectionXCoordinates[0] = minX + (maxX - minX) * 1 / 5;
+        _config.CrossSectionXCoordinates[1] = minX + (maxX - minX) * 2 / 5;
+        _config.CrossSectionXCoordinates[2] = minX + (maxX - minX) * 3 / 5;
+        _config.CrossSectionXCoordinates[3] = minX + (maxX - minX) * 4 / 5;
         return new PreSplitPolygon(topEdges, _config.MinDistanceToFreeLine);
     }
 
@@ -314,6 +324,9 @@ public class BlastFactory
         }
     }
 
+    // 处理多边形，偏移并布点，没有永久轮廓线的情况
+    
+
     // 分配设置孔位
     private void AssignHolePosition()
     {
@@ -352,70 +365,5 @@ public class BlastFactory
                 holePositionLists[i].Add(holePosition);
             }
         }
-    }
-
-    // 计算剖面图的边界
-    private List<Point3D> CalculateCrossSectionEdges(BasePolygon topPolygon, BasePolygon bottomPolygon, double x)
-    {
-        List<Point3D> newPoints = new List<Point3D>();
-        foreach (var edge in topPolygon.Edges)
-        {
-            var start = edge.Start;
-            var end = edge.End;
-            if (start.X <= x && end.X >= x || start.X >= x && end.X <= x)
-            {
-                var y = start.Y + (x - start.X) * (end.Y - start.Y) / (end.X - start.X);
-                newPoints.Add(new Point3D(x, y, start.Z));
-            }
-        }
-        foreach (var edge in bottomPolygon.Edges)
-        {
-            var start = edge.Start;
-            var end = edge.End;
-            if (start.X <= x && end.X >= x || start.X >= x && end.X <= x)
-            {
-                var y = start.Y + (x - start.X) * (end.Y - start.Y) / (end.X - start.X);
-                newPoints.Add(new Point3D(x, y, start.Z));
-            }
-        }
-        // 调整顺序，使得点按照顺序连接，后两个点交换位置
-        if (newPoints.Count == 4)
-        {
-            var temp = newPoints[2];
-            newPoints[2] = newPoints[3];
-            newPoints[3] = temp;
-        }
-        return newPoints;
-    }
-
-    // 找到距离 X 最近的炮孔对应的 Y 坐标
-    private List<Point3D> FindNearestBlastHoles(List<HashSet<Point3D>> blastHolePositions, double x)
-    {
-        List<Point3D> newHoles = new List<Point3D>();
-        foreach (var blastHoles in blastHolePositions)
-        {
-            if (!blastHoles.Any())
-            {
-                continue;
-            }
-            var nearestHole = blastHoles.OrderBy(hole => Math.Abs(hole.X - x)).First();
-            // 距离太远，不绘制
-            if (Math.Abs(nearestHole.X - x) > _config.MainBlastHoleSpacing / 2)
-            {
-                continue;
-            }
-            // 将 nearestHole 平移到平面 X = x 上
-            nearestHole = new Point3D(x, nearestHole.Y, nearestHole.Z);
-            newHoles.Add(nearestHole);
-        }
-        return newHoles;
-    }
-
-    // 计算炮孔线条的坐标，从起点开始，倾斜角度为 inclinationAngle 度，终点在下底面上
-    private List<Point3D> CalculateBlastHoleLine(Point3D hole, double diameter, double inclinationAngle)
-    {
-        var angle = inclinationAngle * Math.PI / 180;
-        var end = new Point3D(hole.X, hole.Y + diameter / Math.Tan(angle), hole.Z - diameter);
-        return new List<Point3D> { hole, end };
     }
 }

@@ -70,6 +70,33 @@ public abstract class BasePolygon
         }
     }
 
+    protected void AddPoints(IEnumerable<Point3D> points, List<Edge> FreeEdges, List<Edge> NormalEdges)
+    {
+        foreach (var point in points)
+        {
+            if (IsPointOnCouterEdge(point) && !IsPointNearFreeEdge(point, FreeEdges))
+            {
+                // 如果点不在普通轮廓线上或者是多边形的顶点，添加到孔点列表中
+                if (!IsPointOnEdges(point, NormalEdges) || IsPointVertex(point))
+                {
+                    HolePoints.Add(point);
+                }
+            }
+        }
+    }
+
+    protected bool IsPointVertex(Point3D point)
+    {
+        foreach (var edge in Edges)
+        {
+            if (point.Equals(edge.Start, Constant.ErrorThreshold) || point.Equals(edge.End, Constant.ErrorThreshold))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private bool IsPointOnCouterEdge(Point3D point)
     {
         foreach (var edge in Edges)
@@ -144,6 +171,19 @@ public abstract class BasePolygon
         return line3D.ClosestPointTo(point).DistanceTo(point) < Constant.ErrorThreshold;
     }
 
+    // 判断一个点是否在边上
+    protected bool IsPointOnEdges(Point3D point, List<Edge> Edges)
+    {
+        foreach (var edge in Edges)
+        {
+            if (isPointOnEdge(point, edge))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // 计算一个点到线段的距离
     protected double DistanceToEdge(Point3D point, Edge edge)
     {
@@ -208,6 +248,12 @@ public abstract class BasePolygon
             points.Add(currentPoint);
             currentPoint = isForward ? currentPoint + spacing * direction : currentPoint - spacing * direction;
         }
+    }
+
+    // 获取普通轮廓线
+    public List<Edge> GetNormalEdges()
+    {
+        return Edges.Where(e => e.style == 4).ToList();
     }
 }
 
@@ -280,7 +326,7 @@ public class PreSplitPolygon : BasePolygon
     public override void ArrangeHoles(double spacing, bool isContourLineEndHoleEnabled = false)
     {
         // 仅在轮廓边上布置炮孔
-        foreach (var edge in Edges.Where(e => e.style == 3))
+        foreach (var edge in Edges.Where(e => e.style == 3 || e.style == 5))
         {
             ArrangeHoleOnEdge(edge, spacing, isContourLineEndHoleEnabled);
         }
@@ -476,7 +522,7 @@ public class BufferPolygon : BasePolygon
             paddingDistance = remainLength;
         }
         HolePoints = new List<Point3D>();
-        AddPoints(tmp, _preSplitPolygon.GetFreeEdges());
+        AddPoints(tmp, _preSplitPolygon.GetFreeEdges(), _preSplitPolygon.GetNormalEdges());
     }
 }
 
@@ -544,6 +590,6 @@ public class MainBlastPolygon : BasePolygon
             paddingDistance = remainLength;
         }
         HolePoints = new List<Point3D>();
-        AddPoints(tmp, _preSplitPolygon.GetFreeEdges());
+        AddPoints(tmp, _preSplitPolygon.GetFreeEdges(), _preSplitPolygon.GetNormalEdges());
     }
 }
