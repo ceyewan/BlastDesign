@@ -49,7 +49,7 @@ public class Config
     public double[] BlastHoleDiameters { get; set; } = new double[] { 0.1, 0.2, 0.2 }; // 三种炮孔的直径
     public double Depth { get; set; } = 2; // 超深
     public double bottomResistanceLine { get; set; } = 0.8; // 底面抵抗线的距离
-    public double InclinationAngle { get; set; } = 90; // 倾角
+    public double InclinationAngle { get; set; } = 95; // 倾角
     // 炮孔装药结构参数，包括总长度、孔底加强段长度、炮孔堵塞段长度、装药段间隔长度、装药块长度
     public int[] PreSplitHoleChargeConfig { get; set; } = { 800, 60, 100, 25, 15 };
     public int[] BufferHoleChargeConfig { get; set; } = { 800, 60, 100, 25, 15 };
