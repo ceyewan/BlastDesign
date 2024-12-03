@@ -37,8 +37,8 @@ public static class HoleSort
 
     private static double DistanceBetweenPoints(BasePolygon basePolygon, Point3D point1, Point3D point2)
     {
-        Edge edge1 = basePolygon.Edges.First(e => basePolygon.isPointOnEdge(point1, e));
-        Edge edge2 = basePolygon.Edges.First(e => basePolygon.isPointOnEdge(point2, e));
+        Edge edge1 = basePolygon.Edges.First(e => basePolygon.IsPointOnEdge(point1, e));
+        Edge edge2 = basePolygon.Edges.First(e => basePolygon.IsPointOnEdge(point2, e));
         if (edge1.Equals(edge2))
         {
             return (point1 - point2).Length;

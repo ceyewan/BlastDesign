@@ -25,7 +25,7 @@ public class BlastDrawer
     }
 
     // 绘制孔设计图
-    public void DrawHoleDesign(List<BasePolygon> polygons, List<HashSet<Point3D>> blastHoles, string outputPath = "output.svg")
+    public void DrawHoleDesign(List<BasePolygon> polygons, List<HashSet<Point3D>> blastHoles, string outputPath = "output.svg", bool HasNoPermanentEdge = false)
     {
         using var stream = new SKFileWStream(outputPath);
         var svgCanvas = SKSvgCanvas.Create(new SKRect(0, 0, canvasWidth, canvasHeight), stream);
@@ -36,7 +36,7 @@ public class BlastDrawer
         // 绘制多边形
         DrawPolygons(svgCanvas, polygons);
         // 绘制各类炮孔
-        DrawBlastHoles(svgCanvas, blastHoles);
+        DrawBlastHoles(svgCanvas, blastHoles, HasNoPermanentEdge);
         svgCanvas.Restore();
         svgCanvas.Dispose();
     }
@@ -194,7 +194,7 @@ public class BlastDrawer
     }
 
     // 绘制炮孔
-    private void DrawBlastHoles(SKCanvas canvas, List<HashSet<Point3D>> blastHoles)
+    private void DrawBlastHoles(SKCanvas canvas, List<HashSet<Point3D>> blastHoles, bool HasNoPermanentEdge)
     {
         var paint = new SKPaint
         {
@@ -202,16 +202,16 @@ public class BlastDrawer
             Style = SKPaintStyle.Stroke,
             StrokeWidth = (float)holeSpacing / 20
         };
-        // 绘制预裂孔
-        paint.Color = SKColors.Red;
-        DrawHoleSet(canvas, blastHoles[0], paint);
-        // 绘制缓冲孔
-        paint.Color = SKColors.Purple;
-        DrawHoleSet(canvas, blastHoles[1], paint);
-        // 绘制主爆孔
-        paint.Color = SKColors.Black;
-        for (int i = 2; i < blastHoles.Count; i++)
+        for (int i = 0; i < blastHoles.Count; i++)
         {
+            if (HasNoPermanentEdge)
+            {
+                paint.Color = SKColors.Black;
+            }
+            else
+            {
+                paint.Color = i == 0 ? SKColors.Red : i == 1 ? SKColors.Purple : SKColors.Black;
+            }
             DrawHoleSet(canvas, blastHoles[i], paint);
         }
     }
