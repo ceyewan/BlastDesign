@@ -38,15 +38,49 @@ public abstract class BasePolygon
     public List<Edge> Edges { get; protected set; }
     public List<Point3D> HolePoints { get; protected set; }
     public double MinDistanceToFreeLine { get; protected set; }
+    public Point3D StartPoint { get; protected set; }
+    public Point3D EndPoint { get; protected set; }
+    public double TotalLength { get; protected set; }
+    public bool HasNoPermanentEdge { get; protected set; } // 是否没有永久轮廓线
 
     protected BasePolygon(List<Edge> edges)
     {
         Edges = edges;
         HolePoints = new List<Point3D>();
+        // 如果有类型为 3 的边，设置起点和终点；
+        if (Edges.Any(e => e.style == 3))
+        {
+            StartPoint = Edges.First(e => e.style == 3).Start;
+            EndPoint = Edges.Last(e => e.style == 3).End;
+            // 类型为 3 的边的数量
+            Console.WriteLine("Number of Contour Lines: " + Edges.Count(e => e.style == 3));
+        }
+        else if (Edges.Any(e => e.style == 4))
+        {
+            HasNoPermanentEdge = true;
+            StartPoint = Edges.First(e => e.style == 4).Start;
+            EndPoint = Edges.Last(e => e.style == 4).End;
+        }
+        else
+        {
+            throw new Exception("Error!!! The polygon does not have contour lines.");
+        }
+        // 计算从 Start 到 End 的长度，注意是折线的长度
+        TotalLength = 0;
+        var currentEdge = Edges.First(e => e.Start.Equals(StartPoint, Constant.ErrorThreshold));
+        while (true)
+        {
+            TotalLength += currentEdge.Length();
+            if (currentEdge.End.Equals(EndPoint, Constant.ErrorThreshold))
+            {
+                break;
+            }
+            currentEdge = Edges.First(e => e.Start.Equals(currentEdge.End, Constant.ErrorThreshold));
+        }
     }
 
     // 偏移方法 - 所有多边形都具有相同的偏移逻辑
-    public abstract BasePolygon? Offset(double edgeDistance, double holeDistance, double spacing);
+    public abstract BasePolygon? Offset(double edgeDistance, bool isContourLineEndHoleEnabled = false);
 
     // 布孔方法 - 不同类型多边形有不同的布孔逻辑
     public abstract void ArrangeHoles(double spacing, bool isContourLineEndHoleEnabled = true);
@@ -59,32 +93,24 @@ public abstract class BasePolygon
         }
     }
 
-    protected void AddPoints(IEnumerable<Point3D> points, List<Edge> Edges)
+    protected void AddPoint(Point3D point, List<Edge> freeEdges)
     {
-        foreach (var point in points)
+        if (!IsPointNearFreeEdge(point, freeEdges))
         {
-            if (IsPointOnCouterEdge(point) && !IsPointNearFreeEdge(point, Edges))
-            {
-                HolePoints.Add(point);
-            }
+            HolePoints.Add(point);
         }
     }
 
-    protected void AddPoints(IEnumerable<Point3D> points, List<Edge> FreeEdges, List<Edge> NormalEdges)
+    protected void AddPoints(IEnumerable<Point3D> points, List<Edge> edges, PreSplitPolygon preSplitPolygon)
     {
-        foreach (var point in points)
+        var pointsToAdd = points.Where(point => !edges.Any(edge => IsPointOnEdge(point, edge)));
+        foreach (var point in pointsToAdd)
         {
-            if (IsPointOnCouterEdge(point) && !IsPointNearFreeEdge(point, FreeEdges))
-            {
-                // 如果点不在普通轮廓线上或者是多边形的顶点，添加到孔点列表中
-                if (!IsPointOnEdges(point, NormalEdges) || IsPointVertex(point))
-                {
-                    HolePoints.Add(point);
-                }
-            }
+            AddPoint(point, preSplitPolygon.GetFreeEdges());
         }
     }
 
+    // 判断点是否是多边形的顶点
     protected bool IsPointVertex(Point3D point)
     {
         foreach (var edge in Edges)
@@ -101,7 +127,7 @@ public abstract class BasePolygon
     {
         foreach (var edge in Edges)
         {
-            if (isPointOnEdge(point, edge))
+            if (IsPointOnEdge(point, edge))
             {
                 return true;
             }
@@ -138,37 +164,31 @@ public abstract class BasePolygon
             {
                 var start = new Point3D(path[i].x, path[i].y, Edges.First().Start.Z);
                 var end = new Point3D(path[(i + 1) % path.Count].x, path[(i + 1) % path.Count].y, Edges.First().Start.Z);
-                newEdges.Add(new Edge(start, end, 3));
+                // 如果这条边平行于任何一条自由边，设置为自由边；否则设置为普通轮廓线
+                if (IsEdgeOverlapping(new Edge(start, end, 1), Edges))
+                {
+                    newEdges.Add(new Edge(start, end, 1));
+                }
+                else
+                {
+                    newEdges.Add(new Edge(start, end, 3));
+                }
             }
+        }
+        // 如果 newEdges 中有 1，那么循环左移将 1 移动到列表最前面
+        if (newEdges.Any(e => e.style == 1))
+        {
+            int index = newEdges.FindIndex(e => e.style == 1);
+            newEdges = newEdges.Skip(index).Concat(newEdges.Take(index)).ToList();
         }
         return newEdges;
     }
 
-    // 偏移一个点，返回偏移后的点
-    protected List<Point3D> OffsetPoints(double distance, double spacing)
-    {
-        List<Point3D> returnPoints = new List<Point3D>();
-        foreach (var p in HolePoints)
-        {
-            foreach (var edge in Edges)
-            {
-                if (isPointOnEdge(p, edge))
-                {
-                    Vector3D normal = edge.Normal();
-                    Vector3D direction = edge.Direction();
-                    returnPoints.Add(p + distance * normal);
-                    returnPoints.Add(p - distance * normal);
-                }
-            }
-        }
-        return returnPoints;
-    }
-
     // 判断一个点是否在边上
-    public bool isPointOnEdge(Point3D point, Edge edge)
+    public bool IsPointOnEdge(Point3D point, Edge edge)
     {
-        var line3D = new LineSegment3D(edge.Start, edge.End);
-        return line3D.ClosestPointTo(point).DistanceTo(point) < Constant.ErrorThreshold;
+        var line = new LineSegment3D(edge.Start, edge.End);
+        return line.ClosestPointTo(point).DistanceTo(point) < Constant.ErrorThreshold;
     }
 
     // 判断一个点是否在边上
@@ -176,7 +196,7 @@ public abstract class BasePolygon
     {
         foreach (var edge in Edges)
         {
-            if (isPointOnEdge(point, edge))
+            if (IsPointOnEdge(point, edge))
             {
                 return true;
             }
@@ -207,11 +227,21 @@ public abstract class BasePolygon
         return false;
     }
 
-    protected bool IsEqualToAnyFreeEdge(Edge edge, List<Edge> Edges)
+    // 判断某条边和给定的一些边是否有重叠
+    protected bool IsEdgeOverlapping(Edge edge, List<Edge> Edges)
     {
         foreach (var e in Edges)
         {
-            if (edge.Direction().Equals(e.Direction(), Constant.ErrorThreshold))
+            // 首先检查方向是否平行
+            if (!edge.Direction().IsParallelTo(e.Direction(), MathNet.Spatial.Units.Angle.FromDegrees(1)))
+            {
+                continue;
+            }
+            // 检查是否有端点在另一边上
+            if (IsPointOnEdge(edge.Start, e) ||
+                IsPointOnEdge(edge.End, e) ||
+                IsPointOnEdge(e.Start, edge) ||
+                IsPointOnEdge(e.End, edge))
             {
                 return true;
             }
@@ -233,20 +263,20 @@ public abstract class BasePolygon
     }
 
     // 在当前边上按照指定间距布孔（缓冲孔和主爆孔）
-    protected (List<Point3D> Points, double RemainingLength) PlaceHolesAlongEdge(double initialOffset, Edge edge, double spacing, bool isForward)
+    protected (List<Point3D> Points, double RemainingLength) PlaceHolesAlongEdge(double initialOffset, Edge edge, double spacing)
     {
         List<Point3D> points = new List<Point3D>();
         Vector3D direction = edge.Direction();
-        Point3D currentPoint = isForward ? edge.Start + initialOffset * direction : edge.End - initialOffset * direction;
+        Point3D currentPoint = edge.Start + initialOffset * direction;
         while (true)
         {
-            if (!isPointOnEdge(currentPoint, edge))
+            if (!IsPointOnEdge(currentPoint, edge))
             {
-                double remainingLength = isForward ? (edge.End - currentPoint).Length : (edge.Start - currentPoint).Length;
+                double remainingLength = (edge.End - currentPoint).Length;
                 return (points, remainingLength);
             }
             points.Add(currentPoint);
-            currentPoint = isForward ? currentPoint + spacing * direction : currentPoint - spacing * direction;
+            currentPoint += spacing * direction;
         }
     }
 
@@ -260,11 +290,11 @@ public abstract class BasePolygon
 // 扩展多边形类
 public class ExtendedPolygon
 {
-    bool isClosed;
+    public bool isClosed;
     // 闭合多边形路径
-    PathD polygonPath;
+    public PathD polygonPath;
     // 开放多边形路径
-    PathD openPath;
+    public PathD openPath;
     double offsetDistance;
     public ExtendedPolygon(List<Edge> edges)
     {
@@ -287,7 +317,7 @@ public class ExtendedPolygon
             }
             openPath.Add(new PointD(edges.Last().End.X, edges.Last().End.Y));
         }
-        // Console.WriteLine("ExtendedPolygon created.");
+        Console.WriteLine("ExtendedPolygon created.");
     }
 
     public PathsD Offset(double distance)
@@ -316,11 +346,17 @@ public class PreSplitPolygon : BasePolygon
         extendedPolygon = CreateExtendedPolygon();
     }
 
-    public override BasePolygon Offset(double edgeDistance, double holeDistance, double spacing)
+    public override BasePolygon Offset(double edgeDistance, bool isMainBlastPolygon = false)
     {
         List<Edge> newEdges = OffsetEdges(edgeDistance, extendedPolygon);
-        List<Point3D> newPoints = OffsetPoints(holeDistance, spacing);
-        return new BufferPolygon(newEdges, newPoints, this, MinDistanceToFreeLine);
+        if (isMainBlastPolygon)
+        {
+            return new MainBlastPolygon(newEdges, this, MinDistanceToFreeLine);
+        }
+        else
+        {
+            return new BufferPolygon(newEdges, this, MinDistanceToFreeLine);
+        }
     }
 
     public override void ArrangeHoles(double spacing, bool isContourLineEndHoleEnabled = false)
@@ -350,10 +386,14 @@ public class PreSplitPolygon : BasePolygon
         var newEdges = new List<Edge>();
         foreach (var edge in Edges)
         {
-            if (edge.style == 3)
+            if (HasNoPermanentEdge ? edge.style == 4 : edge.style == 3)
             {
-                // 如果是第一条轮廓线，修改起点然后添加
-                if (edge.Start.Equals(FindFirstAndLastContour().Item1.Start))
+                // 如果只有一条轮廓线，修改起点和终点然后添加
+                if (edge.Start.Equals(FindFirstAndLastContour().Item1.Start) && edge.End.Equals(FindFirstAndLastContour().Item2.End))
+                {
+                    newEdges.Add(new Edge(newStart, newEnd, 3));
+                } // 如果是第一条轮廓线，修改起点然后添加
+                else if (edge.Start.Equals(FindFirstAndLastContour().Item1.Start))
                 {
                     newEdges.Add(new Edge(newStart, edge.End, 3));
                 } // 如果是最后一条轮廓线，修改终点然后添加
@@ -367,6 +407,9 @@ public class PreSplitPolygon : BasePolygon
                 }
             }
         }
+        Console.WriteLine("OffsetContourStartAndEnd.");
+        // 打印 edges 的数量
+        Console.WriteLine("Number of Edges: " + newEdges.Count);
         return new ExtendedPolygon(newEdges);
     }
 
@@ -377,7 +420,7 @@ public class PreSplitPolygon : BasePolygon
         (Edge first, Edge last) = FindFirstAndLastContour();
         var firstLine3D = new Line3D(first.Start, first.End);
         var lastLine3D = new Line3D(last.Start, last.End);
-        if (firstLine3D.IsParallelTo(lastLine3D))
+        if (firstLine3D.IsParallelTo(lastLine3D, MathNet.Spatial.Units.Angle.FromRadians(Constant.ErrorThreshold)))
         {
             Point3D newStart = first.Start - first.Length() * first.Direction();
             Point3D newEnd = last.End + last.Length() * last.Direction();
@@ -405,8 +448,19 @@ public class PreSplitPolygon : BasePolygon
     // 找到多边形的第一和最后一个轮廓线
     private (Edge, Edge) FindFirstAndLastContour()
     {
-        Edge first = Edges.First(e => e.style == 3);
-        Edge last = Edges.Last(e => e.style == 3);
+        Edge? first = Edges.FirstOrDefault(e => e.style == 3);
+        Edge? last = Edges.LastOrDefault(e => e.style == 3);
+        // 如果没找到类型为 3 的边，就找类型为 4 的边
+        if (first == null || last == null)
+        {
+            first = Edges.FirstOrDefault(e => e.style == 4);
+            last = Edges.LastOrDefault(e => e.style == 4);
+        }
+        // 如果仍然没有找到，抛出异常
+        if (first == null || last == null)
+        {
+            throw new InvalidOperationException("未找到类型为 3 或 4 的边");
+        }
         return (first, last);
     }
 
@@ -467,62 +521,41 @@ public class BufferPolygon : BasePolygon
 {
     private readonly PreSplitPolygon _preSplitPolygon;
 
-    public BufferPolygon(List<Edge> edges, List<Point3D> points, PreSplitPolygon preSplitPolygon, double MinDistanceToFreeLine) : base(edges)
+    public BufferPolygon(List<Edge> edges, PreSplitPolygon preSplitPolygon, double MinDistanceToFreeLine) : base(edges)
     {
         this.MinDistanceToFreeLine = MinDistanceToFreeLine;
         _preSplitPolygon = preSplitPolygon;
-        AddPoints(points, new List<Edge>());
     }
 
-    public override BasePolygon Offset(double edgeDistance, double holeDistance, double spacing)
+    public override BasePolygon Offset(double edgeDistance, bool isMainBlastPolygon = false)
     {
         List<Edge> newEdges = OffsetEdges(edgeDistance, _preSplitPolygon.extendedPolygon);
-        List<Point3D> newPoints = OffsetPoints(holeDistance, spacing);
-        return new MainBlastPolygon(newEdges, newPoints, _preSplitPolygon, MinDistanceToFreeLine);
+        return new MainBlastPolygon(newEdges, _preSplitPolygon, MinDistanceToFreeLine);
     }
 
     public override void ArrangeHoles(double interval, bool isContourLineEndHoleEnabled = true)
     {
+        Console.WriteLine("BufferPolygon ArrangeHoles.");
+        // 打印 Start 和 End 和 Length
+        Console.WriteLine($"Start: {StartPoint}, End: {EndPoint}, Length: {TotalLength}");
+        double intervalActual = TotalLength / (int)Math.Round(TotalLength / interval);
+        // 从 Start 开始，每隔 interval 布置一个孔，直到 End 为止
         List<Point3D> tmp = new List<Point3D>();
-        HashSet<Edge> visitedEdges = new HashSet<Edge>();
-        // 通过已知孔找到起始点
-        Point3D startPoint = HolePoints.First();
-        Edge startEdge = Edges.First(e => isPointOnEdge(startPoint, e));
-        Edge currentEdge = startEdge;
-        double paddingDistance = (startPoint - currentEdge.Start).Length;
-        // 正向布孔
+        Edge currentEdge = Edges.First(e => e.Start.Equals(StartPoint));
+        double paddingDistance = (StartPoint - currentEdge.Start).Length;
         while (true)
         {
-            (List<Point3D> edgePoints, double remainLength) = PlaceHolesAlongEdge(paddingDistance, currentEdge, interval, true);
+            (List<Point3D> edgePoints, double remainLength) = PlaceHolesAlongEdge(paddingDistance, currentEdge, intervalActual);
             tmp.AddRange(edgePoints);
-            visitedEdges.Add(currentEdge);
-            // 从 Edge 中找到起点是 currentEdge 终点的边
-            Edge nextEdge = Edges.First(e => e.Start.Equals(currentEdge.End));
-            if (IsEqualToAnyFreeEdge(nextEdge, _preSplitPolygon.GetFreeEdges()) || visitedEdges.Contains(nextEdge))
+            if (currentEdge.End.Equals(EndPoint))
             {
                 break;
             }
-            currentEdge = nextEdge;
+            currentEdge = Edges.First(e => e.Start.Equals(currentEdge.End));
             paddingDistance = remainLength;
         }
-        currentEdge = startEdge;
-        paddingDistance = (startPoint - currentEdge.End).Length;
-        // 反向布孔
-        while (true)
-        {
-            (List<Point3D> edgePoints, double remainLength) = PlaceHolesAlongEdge(paddingDistance, currentEdge, interval, false);
-            tmp.AddRange(edgePoints);
-            // 从 Edge 中找到终点是 currentEdge 起点的边
-            Edge nextEdge = Edges.First(e => e.End.Equals(currentEdge.Start));
-            if (IsEqualToAnyFreeEdge(nextEdge, _preSplitPolygon.GetFreeEdges()) || visitedEdges.Contains(nextEdge))
-            {
-                break;
-            }
-            currentEdge = nextEdge;
-            paddingDistance = remainLength;
-        }
-        HolePoints = new List<Point3D>();
-        AddPoints(tmp, _preSplitPolygon.GetFreeEdges(), _preSplitPolygon.GetNormalEdges());
+        // 缓冲孔，将自由边上的炮孔排除
+        AddPoints(tmp, _preSplitPolygon.GetFreeEdges(), _preSplitPolygon);
     }
 }
 
@@ -531,65 +564,43 @@ public class MainBlastPolygon : BasePolygon
 {
     private readonly PreSplitPolygon _preSplitPolygon;
 
-    public MainBlastPolygon(List<Edge> edges, List<Point3D> points, PreSplitPolygon preSplitPolygon, double MinDistanceToFreeLine) : base(edges)
+    public MainBlastPolygon(List<Edge> edges, PreSplitPolygon preSplitPolygon, double MinDistanceToFreeLine) : base(edges)
     {
         this.MinDistanceToFreeLine = MinDistanceToFreeLine;
         _preSplitPolygon = preSplitPolygon;
-        AddPoints(points, new List<Edge>());
     }
 
-    public override BasePolygon? Offset(double edgeDistance, double holeDistance, double spacing)
+    public override BasePolygon? Offset(double edgeDistance, bool isMainBlastPolygon = false)
     {
         List<Edge> newEdges = OffsetEdges(edgeDistance, _preSplitPolygon.extendedPolygon);
-        List<Point3D> newPoints = OffsetPoints(holeDistance, spacing);
         if (newEdges.Count == 0)
         {
             return null;
         }
-        return new MainBlastPolygon(newEdges, newPoints, _preSplitPolygon, MinDistanceToFreeLine);
+        return new MainBlastPolygon(newEdges, _preSplitPolygon, MinDistanceToFreeLine);
     }
 
     public override void ArrangeHoles(double interval, bool isContourLineEndHoleEnabled = true)
     {
+        // 打印 startPoints 和 endPoints 和 TotalLength
+        Console.WriteLine("Start: " + StartPoint + ", End: " + EndPoint + ", Length: " + TotalLength);
+        double intervalActual = TotalLength / (int)Math.Round(TotalLength / interval);
+        // 从 Start 开始，每隔 interval 布置一个孔，直到 End 为止
         List<Point3D> tmp = new List<Point3D>();
-        HashSet<Edge> visitedEdges = new HashSet<Edge>();
-        // 通过已知孔找到起始点
-        Point3D startPoint = HolePoints.First();
-        Edge startEdge = Edges.First(e => isPointOnEdge(startPoint, e));
-        Edge currentEdge = startEdge;
-        double paddingDistance = (startPoint - currentEdge.Start).Length;
-        // 正向布孔
+        Edge currentEdge = Edges.First(e => e.Start.Equals(StartPoint));
+        double paddingDistance = (StartPoint - currentEdge.Start).Length;
         while (true)
         {
-            (List<Point3D> edgePoints, double remainLength) = PlaceHolesAlongEdge(paddingDistance, currentEdge, interval, true);
+            (List<Point3D> edgePoints, double remainLength) = PlaceHolesAlongEdge(paddingDistance, currentEdge, intervalActual);
             tmp.AddRange(edgePoints);
-            visitedEdges.Add(currentEdge);
-            // 从 Edge 中找到起点是 currentEdge 终点的边
-            Edge nextEdge = Edges.First(e => e.Start.Equals(currentEdge.End));
-            if (IsEqualToAnyFreeEdge(nextEdge, _preSplitPolygon.GetFreeEdges()) || visitedEdges.Contains(nextEdge))
+            if (currentEdge.End.Equals(EndPoint))
             {
                 break;
             }
-            currentEdge = nextEdge;
+            currentEdge = Edges.First(e => e.Start.Equals(currentEdge.End));
             paddingDistance = remainLength;
         }
-        currentEdge = startEdge;
-        paddingDistance = (startPoint - currentEdge.End).Length;
-        // 反向布孔
-        while (true)
-        {
-            (List<Point3D> edgePoints, double remainLength) = PlaceHolesAlongEdge(paddingDistance, currentEdge, interval, false);
-            tmp.AddRange(edgePoints);
-            // 从 Edge 中找到终点是 currentEdge 起点的边
-            Edge nextEdge = Edges.First(e => e.End.Equals(currentEdge.Start));
-            if (IsEqualToAnyFreeEdge(nextEdge, _preSplitPolygon.GetFreeEdges()) || visitedEdges.Contains(nextEdge))
-            {
-                break;
-            }
-            currentEdge = nextEdge;
-            paddingDistance = remainLength;
-        }
-        HolePoints = new List<Point3D>();
-        AddPoints(tmp, _preSplitPolygon.GetFreeEdges(), _preSplitPolygon.GetNormalEdges());
+        // 主爆孔，将在自由边上的炮孔排除
+        AddPoints(tmp, _preSplitPolygon.GetFreeEdges(), _preSplitPolygon);
     }
 }

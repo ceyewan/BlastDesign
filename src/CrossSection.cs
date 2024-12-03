@@ -21,7 +21,7 @@ public class CrossSection
             if (start.X <= x && end.X >= x || start.X >= x && end.X <= x)
             {
                 var y = start.Y + (x - start.X) * (end.Y - start.Y) / (end.X - start.X);
-                if (edge.style == 3)
+                if (edge.style == 3 || edge.style == 4)
                 {
                     b = new Point3D(x, y, start.Z);
                 }
@@ -38,7 +38,7 @@ public class CrossSection
             if (start.X <= x && end.X >= x || start.X >= x && end.X <= x)
             {
                 var y = start.Y + (x - start.X) * (end.Y - start.Y) / (end.X - start.X);
-                if (edge.style == 3)
+                if (edge.style == 3 || edge.style == 4)
                 {
                     c = new Point3D(x, y, start.Z);
                 }
@@ -84,16 +84,37 @@ public class CrossSection
     }
 
     // 给定起点和终点，等分线段为 count + 1 份，返回 count 个等分点坐标
-    public List<Point3D> DivideLine(Point3D start, Point3D end, int count)
+    public List<Point3D> DivideLine(Point3D start, Point3D end, double startPadding, double endPadding, int count)
     {
-        List<Point3D> points = new List<Point3D>();
+        List<Point3D> points = new List<Point3D> { start };
+        // 添加从 start 到 end 距离为 startPadding 的点
+        var newStart = start + startPadding * (end - start).Normalize();
+        points.Add(newStart);
+        var newEnd = end - endPadding * (end - start).Normalize();
         for (int i = 1; i <= count; i++)
         {
-            var x = start.X + (end.X - start.X) * i / (count + 1);
-            var y = start.Y + (end.Y - start.Y) * i / (count + 1);
-            var z = start.Z + (end.Z - start.Z) * i / (count + 1);
+            var x = newStart.X + (newEnd.X - newStart.X) * i / (count + 1);
+            var y = newStart.Y + (newEnd.Y - newStart.Y) * i / (count + 1);
+            var z = newStart.Z + (newEnd.Z - newStart.Z) * i / (count + 1);
             points.Add(new Point3D(x, y, z));
         }
+        points.Add(newEnd);
+        return points;
+    }
+
+    // 重构版本的 DivideLine，用于没有永久轮廓的情况
+    public List<Point3D> DivideLine(Point3D start, Point3D end, double endPadding, int count)
+    {
+        List<Point3D> points = new List<Point3D> { start };
+        var newEnd = end - endPadding * (end - start).Normalize();
+        for (int i = 1; i <= count; i++)
+        {
+            var x = start.X + (newEnd.X - start.X) * i / (count + 1);
+            var y = start.Y + (newEnd.Y - start.Y) * i / (count + 1);
+            var z = start.Z + (newEnd.Z - start.Z) * i / (count + 1);
+            points.Add(new Point3D(x, y, z));
+        }
+        points.Add(newEnd);
         return points;
     }
 }
