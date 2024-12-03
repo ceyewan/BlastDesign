@@ -309,7 +309,10 @@ public class BlastDrawer
         using var stream = new SKFileWStream(outputPath);
         var svgCanvas = SKSvgCanvas.Create(new SKRect(0, 0, canvasWidth, canvasHeight), stream);
         svgCanvas.Clear(SKColors.White);
-        maxX = maxY = double.MinValue; minX = minY = double.MaxValue;
+        var maxX = double.MinValue;
+        var maxY = double.MinValue;
+        var minX = double.MaxValue;
+        var minY = double.MaxValue;
         foreach (var edge in newEdges)
         {
             maxX = Math.Max(maxX, edge.Y);
@@ -328,10 +331,9 @@ public class BlastDrawer
             minX = Math.Min(minX, line[1].Y);
             minY = Math.Min(minY, line[1].Z);
         }
-        scale = (float)Math.Min(canvasWidth / (maxX - minX), canvasHeight / (maxY - minY)) * 0.9f;
-        offsetX = (float)((canvasWidth - (maxX - minX) * scale) / 2 - minX * scale);
-        offsetX = (float)(canvasWidth - ((canvasWidth - (maxX - minX) * scale) / 2 - minX * scale)); // 修改X轴偏移计算
-        offsetY = (float)(canvasHeight - ((canvasHeight - (maxY - minY) * scale) / 2 - minY * scale)); // 修改Y轴偏移计算
+        var scale = (float)Math.Min(canvasWidth / (maxX - minX), canvasHeight / (maxY - minY)) * 0.9f;
+        var offsetX = (float)(canvasWidth - ((canvasWidth - (maxX - minX) * scale) / 2 - minX * scale)); // 修改X轴偏移计算
+        var offsetY = (float)(canvasHeight - ((canvasHeight - (maxY - minY) * scale) / 2 - minY * scale)); // 修改Y轴偏移计算
 
         // Console.WriteLine($"maxX: {maxX}, maxY: {maxY}, minX: {minX}, minY: {minY}");
         // Console.WriteLine($"scale: {scale}, offsetX: {offsetX}, offsetY: {offsetY}");
