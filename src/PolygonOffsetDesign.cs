@@ -33,7 +33,7 @@ public class Edge
 }
 
 // 基础多边形类
-public abstract class BasePolygon
+public abstract class BasePolygon : IDisposable
 {
     public List<Edge> Edges { get; protected set; }
     public List<Point3D> HolePoints { get; protected set; }
@@ -53,7 +53,7 @@ public abstract class BasePolygon
             StartPoint = Edges.First(e => e.style == 3).Start;
             EndPoint = Edges.Last(e => e.style == 3).End;
             // 类型为 3 的边的数量
-            Console.WriteLine("Number of Contour Lines: " + Edges.Count(e => e.style == 3));
+            // Console.WriteLine("Number of Contour Lines: " + Edges.Count(e => e.style == 3));
         }
         else if (Edges.Any(e => e.style == 4))
         {
@@ -110,31 +110,6 @@ public abstract class BasePolygon
         }
     }
 
-    // 判断点是否是多边形的顶点
-    protected bool IsPointVertex(Point3D point)
-    {
-        foreach (var edge in Edges)
-        {
-            if (point.Equals(edge.Start, Constant.ErrorThreshold) || point.Equals(edge.End, Constant.ErrorThreshold))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private bool IsPointOnCouterEdge(Point3D point)
-    {
-        foreach (var edge in Edges)
-        {
-            if (IsPointOnEdge(point, edge))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
     // 使用 Clipper 实现多边形的偏移逻辑，返回偏移后的多边形的边
     protected List<Edge> OffsetEdges(double distance, ExtendedPolygon extendedPolygon)
     {
@@ -189,19 +164,6 @@ public abstract class BasePolygon
     {
         var line = new LineSegment3D(edge.Start, edge.End);
         return line.ClosestPointTo(point).DistanceTo(point) < Constant.ErrorThreshold;
-    }
-
-    // 判断一个点是否在边上
-    protected bool IsPointOnEdges(Point3D point, List<Edge> Edges)
-    {
-        foreach (var edge in Edges)
-        {
-            if (IsPointOnEdge(point, edge))
-            {
-                return true;
-            }
-        }
-        return false;
     }
 
     // 计算一个点到线段的距离
@@ -279,16 +241,36 @@ public abstract class BasePolygon
             currentPoint += spacing * direction;
         }
     }
-
-    // 获取普通轮廓线
-    public List<Edge> GetNormalEdges()
+    // 实现 IDisposable 接口
+    private bool disposed = false;
+    protected virtual void Dispose(bool disposing)
     {
-        return Edges.Where(e => e.style == 4).ToList();
+        if (!disposed)
+        {
+            if (disposing)
+            {
+                // 释放托管资源
+                Edges.Clear();
+                HolePoints.Clear();
+            }
+            // 释放非托管资源（如果有）
+            disposed = true;
+        }
+    }
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    ~BasePolygon()
+    {
+        Dispose(false);
     }
 }
 
 // 扩展多边形类
-public class ExtendedPolygon
+public class ExtendedPolygon : IDisposable
 {
     public bool isClosed;
     // 闭合多边形路径
@@ -317,7 +299,7 @@ public class ExtendedPolygon
             }
             openPath.Add(new PointD(edges.Last().End.X, edges.Last().End.Y));
         }
-        Console.WriteLine("ExtendedPolygon created.");
+        // Console.WriteLine("ExtendedPolygon created.");
     }
 
     public PathsD Offset(double distance)
@@ -333,6 +315,32 @@ public class ExtendedPolygon
     public bool isClosedPolygon()
     {
         return isClosed;
+    }
+
+    // 实现 IDisposable 接口
+    private bool disposed = false;
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposed)
+        {
+            if (disposing)
+            {
+                // 释放托管资源
+                polygonPath.Clear();
+                openPath.Clear();
+            }
+            // 释放非托管资源（如果有）
+            disposed = true;
+        }
+    }
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+    ~ExtendedPolygon()
+    {
+        Dispose(false);
     }
 }
 
@@ -407,9 +415,9 @@ public class PreSplitPolygon : BasePolygon
                 }
             }
         }
-        Console.WriteLine("OffsetContourStartAndEnd.");
-        // 打印 edges 的数量
-        Console.WriteLine("Number of Edges: " + newEdges.Count);
+        // Console.WriteLine("OffsetContourStartAndEnd.");
+        // // 打印 edges 的数量
+        // Console.WriteLine("Number of Edges: " + newEdges.Count);
         return new ExtendedPolygon(newEdges);
     }
 
@@ -514,12 +522,30 @@ public class PreSplitPolygon : BasePolygon
         }
         return minDistance;
     }
+
+    // 实现 IDisposable 接口
+    private bool disposed = false;
+    protected override void Dispose(bool disposing)
+    {
+        if (!disposed)
+        {
+            if (disposing)
+            {
+                // 释放 BufferPolygon 特有的托管资源
+                extendedPolygon.Dispose();
+            }
+            // 释放 BasePolygon 的资源
+            base.Dispose(disposing);
+            disposed = true;
+        }
+    }
 }
 
 // 缓冲孔多边形
 public class BufferPolygon : BasePolygon
 {
     private readonly PreSplitPolygon _preSplitPolygon;
+    private bool disposed = false;
 
     public BufferPolygon(List<Edge> edges, PreSplitPolygon preSplitPolygon, double MinDistanceToFreeLine) : base(edges)
     {
@@ -535,9 +561,9 @@ public class BufferPolygon : BasePolygon
 
     public override void ArrangeHoles(double interval, bool isContourLineEndHoleEnabled = true)
     {
-        Console.WriteLine("BufferPolygon ArrangeHoles.");
-        // 打印 Start 和 End 和 Length
-        Console.WriteLine($"Start: {StartPoint}, End: {EndPoint}, Length: {TotalLength}");
+        // Console.WriteLine("BufferPolygon ArrangeHoles.");
+        // // 打印 Start 和 End 和 Length
+        // Console.WriteLine($"Start: {StartPoint}, End: {EndPoint}, Length: {TotalLength}");
         double intervalActual = TotalLength / (int)Math.Round(TotalLength / interval);
         // 从 Start 开始，每隔 interval 布置一个孔，直到 End 为止
         List<Point3D> tmp = new List<Point3D>();
@@ -557,12 +583,28 @@ public class BufferPolygon : BasePolygon
         // 缓冲孔，将自由边上的炮孔排除
         AddPoints(tmp, _preSplitPolygon.GetFreeEdges(), _preSplitPolygon);
     }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (!disposed)
+        {
+            if (disposing)
+            {
+                // 释放 BufferPolygon 特有的托管资源
+                _preSplitPolygon.Dispose();
+            }
+            // 释放 BasePolygon 的资源
+            base.Dispose(disposing);
+            disposed = true;
+        }
+    }
 }
 
 // 主爆孔多边形
 public class MainBlastPolygon : BasePolygon
 {
     private readonly PreSplitPolygon _preSplitPolygon;
+    private bool disposed = false;
 
     public MainBlastPolygon(List<Edge> edges, PreSplitPolygon preSplitPolygon, double MinDistanceToFreeLine) : base(edges)
     {
@@ -583,7 +625,7 @@ public class MainBlastPolygon : BasePolygon
     public override void ArrangeHoles(double interval, bool isContourLineEndHoleEnabled = true)
     {
         // 打印 startPoints 和 endPoints 和 TotalLength
-        Console.WriteLine("Start: " + StartPoint + ", End: " + EndPoint + ", Length: " + TotalLength);
+        // Console.WriteLine("Start: " + StartPoint + ", End: " + EndPoint + ", Length: " + TotalLength);
         double intervalActual = TotalLength / (int)Math.Round(TotalLength / interval);
         // 从 Start 开始，每隔 interval 布置一个孔，直到 End 为止
         List<Point3D> tmp = new List<Point3D>();
@@ -602,5 +644,20 @@ public class MainBlastPolygon : BasePolygon
         }
         // 主爆孔，将在自由边上的炮孔排除
         AddPoints(tmp, _preSplitPolygon.GetFreeEdges(), _preSplitPolygon);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (!disposed)
+        {
+            if (disposing)
+            {
+                // 释放 BufferPolygon 特有的托管资源
+                _preSplitPolygon.Dispose();
+            }
+            // 释放 BasePolygon 的资源
+            base.Dispose(disposing);
+            disposed = true;
+        }
     }
 }

@@ -2,43 +2,28 @@ using MathNet.Spatial.Euclidean;
 
 public static class HoleSort
 {
-    public static List<Point3D> Sort(BasePolygon basePolygon, HashSet<Point3D> blastHoles, PreSplitPolygon preSplitPolygon)
+    public static List<Point3D> Sort(BasePolygon basePolygon, HashSet<Point3D> blastHoles)
     {
-        Point3D startPoint = GetStartPosition(basePolygon, preSplitPolygon);
+        Point3D startPoint = GetStartPosition(basePolygon);
         List<Point3D> holes = blastHoles.ToList();
         holes = holes.OrderBy(h => DistanceBetweenPoints(basePolygon, startPoint, h)).ToList();
         return holes;
     }
 
-    private static Point3D GetStartPosition(BasePolygon basePolygon, PreSplitPolygon preSplitPolygon)
+    private static Point3D GetStartPosition(BasePolygon basePolygon)
     {
-        foreach (var edge in basePolygon.Edges)
-        {
-            if (isPointOnFreeEdge(edge.Start, preSplitPolygon.GetFreeEdges()) && !isPointOnFreeEdge(edge.Start + edge.Length() / 2 * edge.Direction(), preSplitPolygon.GetFreeEdges()))
-            {
-                return edge.Start;
-            }
-        }
-        // 如果没有找到符合条件的边，返回默认值
-        return basePolygon.Edges.First().Start;
-    }
-
-    private static bool isPointOnFreeEdge(Point3D point, List<Edge> freeEdges)
-    {
-        foreach (var edge in freeEdges)
-        {
-            if (point.DistanceTo(edge.Start) + point.DistanceTo(edge.End) - edge.Length() < Constant.ErrorThreshold)
-            {
-                return true;
-            }
-        }
-        return false;
+        return basePolygon.StartPoint;
     }
 
     private static double DistanceBetweenPoints(BasePolygon basePolygon, Point3D point1, Point3D point2)
     {
-        Edge edge1 = basePolygon.Edges.First(e => basePolygon.IsPointOnEdge(point1, e));
-        Edge edge2 = basePolygon.Edges.First(e => basePolygon.IsPointOnEdge(point2, e));
+        // 检查 point1 和 point2 是否在 basePolygon 的边上
+        Edge? edge1 = basePolygon.Edges.FirstOrDefault(e => basePolygon.IsPointOnEdge(point1, e));
+        Edge? edge2 = basePolygon.Edges.FirstOrDefault(e => basePolygon.IsPointOnEdge(point2, e));
+        if (edge1 == null || edge2 == null)
+        {
+            throw new ArgumentException("point1 或 point2 不在 basePolygon 的边上");
+        }
         if (edge1.Equals(edge2))
         {
             return (point1 - point2).Length;
@@ -47,7 +32,11 @@ public static class HoleSort
         Point3D currentPoint = edge1.End;
         while (true)
         {
-            Edge nextEdge = basePolygon.Edges.First(e => e.Start.Equals(currentPoint));
+            Edge? nextEdge = basePolygon.Edges.FirstOrDefault(e => e.Start.Equals(currentPoint));
+            if (nextEdge == null)
+            {
+                throw new InvalidOperationException("basePolygon 中的边不连通");
+            }
             if (nextEdge.Equals(edge2))
             {
                 distance += (nextEdge.Start - point2).Length;

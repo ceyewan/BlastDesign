@@ -67,7 +67,16 @@ public class HoleTiming
         }
     }
 
-    public (Dictionary<Point3D, double>, List<List<Point3D>>) TimingHoles()
+    public (Dictionary<Point3D, double>, List<List<Point3D>>) TimingHoles(bool hasNoPermanentEdge)
+    {
+        if (!hasNoPermanentEdge)
+        {
+            return TimingHoles();
+        }
+        return TimingHolesWithoutPermanentEdge();
+    }
+
+    private (Dictionary<Point3D, double>, List<List<Point3D>>) TimingHoles()
     {
         Dictionary<Point3D, double> timing = new Dictionary<Point3D, double>();
         List<List<Point3D>> blastLines = new List<List<Point3D>>();
@@ -85,28 +94,94 @@ public class HoleTiming
             }
         }
         startPoint = blastStartPoint.Top;
+        int count = 0;
         for (int i = holePositions.Count - 1; i > 0; i--)
         {
             if (holePositions[i].Count == 0)
             {
+                count++;
                 continue;
             }
             int index = GetMiddleHoleIndex(holePositions[i]);
             blastLines.Add(new List<Point3D> { startPoint, holePositions[i][index].Top });
             startPoint = holePositions[i][index].Top;
-            AddToTiming(timing, holePositions[i][index].Top, (holePositions.Count - i - 1) * _config.InterRowDelay);
+            AddToTiming(timing, holePositions[i][index].Top, (holePositions.Count - i - 1 - count) * _config.InterRowDelay);
             for (int j = index - 1; j >= 0; j--)
             {
                 blastLines.Add(new List<Point3D> { holePositions[i][j + 1].Top, holePositions[i][j].Top });
-                AddToTiming(timing, holePositions[i][j].Top, (holePositions.Count - i - 1) * _config.InterRowDelay + (index - j) * _config.InterColumnDelay);
+                AddToTiming(timing, holePositions[i][j].Top, (holePositions.Count - i - 1 - count) * _config.InterRowDelay + (index - j) * _config.InterColumnDelay);
             }
             for (int j = index + 1; j < holePositions[i].Count; j++)
             {
                 blastLines.Add(new List<Point3D> { holePositions[i][j - 1].Top, holePositions[i][j].Top });
-                AddToTiming(timing, holePositions[i][j].Top, (holePositions.Count - i - 1) * _config.InterRowDelay + (j - index) * _config.InterColumnDelay);
+                AddToTiming(timing, holePositions[i][j].Top, (holePositions.Count - i - 1 - count) * _config.InterRowDelay + (j - index) * _config.InterColumnDelay);
             }
         }
         timing = timing.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
         return (timing, blastLines);
+    }
+
+    private (Dictionary<Point3D, double>, List<List<Point3D>>) TimingHolesWithoutPermanentEdge()
+    {
+        Dictionary<Point3D, double> timing = new Dictionary<Point3D, double>();
+        List<List<Point3D>> blastLines = new List<List<Point3D>>();
+        HolePosition blastStartPoint = new HolePosition();
+        blastStartPoint.Top = new Point3D(0, 0, 0);
+        var startPoint = blastStartPoint.Top;
+        int count = 0;
+        for (int i = holePositions.Count - 1; i >= 0; i--)
+        {
+            if (holePositions[i].Count == 0)
+            {
+                count++;
+                continue;
+            }
+            int index = GetMiddleHoleIndex(holePositions[i]);
+            blastLines.Add(new List<Point3D> { startPoint, holePositions[i][index].Top });
+            startPoint = holePositions[i][index].Top;
+            AddToTiming(timing, holePositions[i][index].Top, (holePositions.Count - i - 1 - count) * _config.InterRowDelay);
+            for (int j = index - 1; j >= 0; j--)
+            {
+                blastLines.Add(new List<Point3D> { holePositions[i][j + 1].Top, holePositions[i][j].Top });
+                AddToTiming(timing, holePositions[i][j].Top, (holePositions.Count - i - 1 - count) * _config.InterRowDelay + (index - j) * _config.InterColumnDelay);
+            }
+            for (int j = index + 1; j < holePositions[i].Count; j++)
+            {
+                blastLines.Add(new List<Point3D> { holePositions[i][j - 1].Top, holePositions[i][j].Top });
+                AddToTiming(timing, holePositions[i][j].Top, (holePositions.Count - i - 1 - count) * _config.InterRowDelay + (j - index) * _config.InterColumnDelay);
+            }
+        }
+        timing = timing.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+        return (timing, blastLines);
+    }
+
+    // 实现 IDisposable 接口
+    private bool disposed = false;
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposed)
+        {
+            if (disposing)
+            {
+                foreach (var holePosition in holePositions)
+                {
+                    holePosition.Clear();
+                }
+                holePositions.Clear();
+            }
+            // 释放非托管资源
+            disposed = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    ~HoleTiming()
+    {
+        Dispose(false);
     }
 }

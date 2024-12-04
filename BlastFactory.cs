@@ -6,7 +6,7 @@ using MathNet.Spatial.Euclidean;
 // 多边形工厂类
 public class BlastFactory
 {
-    private readonly Config _config;
+    private readonly Config _config = null!;
     // 底部多边形
     private PreSplitPolygon bottomPolygon = null!;
     // 确定爆破线的多边形
@@ -20,7 +20,7 @@ public class BlastFactory
     // 爆破线
     private List<List<Point3D>> blastLinePoints = new List<List<Point3D>>();
     // 绘画类
-    private BlastDrawer blastDrawer;
+    private BlastDrawer blastDrawer = null!;
     // 最大最小坐标
     private double maxX = 0, maxY = 0, minX = 1e9, minY = 1e9;
     // 每排炮孔的倾斜角度
@@ -34,13 +34,20 @@ public class BlastFactory
     /// <param name="config">配置信息</param>
     public BlastFactory(Config config)
     {
-        _config = config;
-        ProcessPolygons(CreatePreSplitPolygon());
-        blastDrawer = new BlastDrawer(maxX, maxY, minX, minY, _config.PreSplitHoleSpacing, _config.PreSplitHoleOffset);
-        CalculateInclinationAngle((minX + maxX) / 2);
-        AssignHolePosition();
-        var holeTiming = new HoleTiming(holePositionLists, _config);
-        (blastTiming, blastLinePoints) = holeTiming.TimingHoles();
+        try
+        {
+            _config = config;
+            ProcessPolygons(CreatePreSplitPolygon());
+            blastDrawer = new BlastDrawer(maxX, maxY, minX, minY, _config.PreSplitHoleSpacing, _config.PreSplitHoleOffset);
+            inclinationAngle = CalculateInclinationAngle((minX + maxX) / 2);
+            AssignHolePosition();
+            var holeTiming = new HoleTiming(holePositionLists, _config);
+            (blastTiming, blastLinePoints) = holeTiming.TimingHoles(hasNoPermanentEdge);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error occurred in {nameof(BlastFactory)} constructor: {ex.Message}");
+        }
     }
 
     /// <summary>
@@ -48,24 +55,46 @@ public class BlastFactory
     /// </summary>
     public void PrintHoles()
     {
-        Console.WriteLine("预裂孔：");
-        foreach (var hole in holePositionLists[0])
+        try
         {
-            Console.WriteLine($"顶部坐标：({hole.Top.X:F2}, {hole.Top.Y:F2}, {hole.Top.Z:F2})，底部坐标：({hole.Bottom.X:F2}, {hole.Bottom.Y:F2}, {hole.Bottom.Z:F2})，孔类型：{hole.HoleStyle}，行号：{hole.RowId}，列号：{hole.ColumnId}，孔号：{hole.HoleId}");
-        }
-        Console.WriteLine("缓冲孔：");
-        foreach (var hole in holePositionLists[1])
-        {
-            Console.WriteLine($"顶部坐标：({hole.Top.X:F2}, {hole.Top.Y:F2}, {hole.Top.Z:F2})，底部坐标：({hole.Bottom.X:F2}, {hole.Bottom.Y:F2}, {hole.Bottom.Z:F2})，孔类型：{hole.HoleStyle}，行号：{hole.RowId}，列号：{hole.ColumnId}，孔号：{hole.HoleId}");
-        }
-        Console.WriteLine("主爆孔：");
-        for (int i = 2; i < holePositionLists.Count; i++)
-        {
-            Console.WriteLine($"第{i - 1}个多边形的主爆孔：");
-            foreach (var hole in holePositionLists[i])
+            if (hasNoPermanentEdge)
             {
-                Console.WriteLine($"顶部坐标：({hole.Top.X:F2}, {hole.Top.Y:F2}, {hole.Top.Z:F2})，底部坐标：({hole.Bottom.X:F2}, {hole.Bottom.Y:F2}, {hole.Bottom.Z:F2})，孔类型：{hole.HoleStyle}，行号：{hole.RowId}，列号：{hole.ColumnId}，孔号：{hole.HoleId}");
+                Console.WriteLine("主爆孔：");
+                for (int i = 0; i < holePositionLists.Count; i++)
+                {
+                    Console.WriteLine($"第{i + 1}个多边形的主爆孔：");
+                    foreach (var hole in holePositionLists[i])
+                    {
+                        Console.WriteLine($"顶部坐标：({hole.Top.X:F2}, {hole.Top.Y:F2}, {hole.Top.Z:F2})，底部坐标：({hole.Bottom.X:F2}, {hole.Bottom.Y:F2}, {hole.Bottom.Z:F2})，孔类型：{hole.HoleStyle}，行号：{hole.RowId}，列号：{hole.ColumnId}，孔号：{hole.HoleId}");
+                    }
+                }
             }
+            else
+            {
+                Console.WriteLine("预裂孔：");
+                foreach (var hole in holePositionLists[0])
+                {
+                    Console.WriteLine($"顶部坐标：({hole.Top.X:F2}, {hole.Top.Y:F2}, {hole.Top.Z:F2})，底部坐标：({hole.Bottom.X:F2}, {hole.Bottom.Y:F2}, {hole.Bottom.Z:F2})，孔类型：{hole.HoleStyle}，行号：{hole.RowId}，列号：{hole.ColumnId}，孔号：{hole.HoleId}");
+                }
+                Console.WriteLine("缓冲孔：");
+                foreach (var hole in holePositionLists[1])
+                {
+                    Console.WriteLine($"顶部坐标：({hole.Top.X:F2}, {hole.Top.Y:F2}, {hole.Top.Z:F2})，底部坐标：({hole.Bottom.X:F2}, {hole.Bottom.Y:F2}, {hole.Bottom.Z:F2})，孔类型：{hole.HoleStyle}，行号：{hole.RowId}，列号：{hole.ColumnId}，孔号：{hole.HoleId}");
+                }
+                Console.WriteLine("主爆孔：");
+                for (int i = 2; i < holePositionLists.Count; i++)
+                {
+                    Console.WriteLine($"第{i - 1}个多边形的主爆孔：");
+                    foreach (var hole in holePositionLists[i])
+                    {
+                        Console.WriteLine($"顶部坐标：({hole.Top.X:F2}, {hole.Top.Y:F2}, {hole.Top.Z:F2})，底部坐标：({hole.Bottom.X:F2}, {hole.Bottom.Y:F2}, {hole.Bottom.Z:F2})，孔类型：{hole.HoleStyle}，行号：{hole.RowId}，列号：{hole.ColumnId}，孔号：{hole.HoleId}");
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error occurred in {nameof(PrintHoles)}: {ex.Message}");
         }
     }
 
@@ -84,7 +113,14 @@ public class BlastFactory
     /// <param name="filePath">文件路径，默认为 "./images/hole_design.svg"</param>
     public void DrawHoleDesign(string filePath = "./images/hole_design.svg")
     {
-        blastDrawer.DrawHoleDesign(blastPolygons, blastHolePositions, filePath, hasNoPermanentEdge);
+        try
+        {
+            blastDrawer.DrawHoleDesign(blastPolygons, blastHolePositions, _config.CrossSectionXCoordinates, filePath, hasNoPermanentEdge);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error occurred in {nameof(DrawHoleDesign)}: {ex.Message}");
+        }
     }
 
     /// <summary>
@@ -93,7 +129,14 @@ public class BlastFactory
     /// <param name="filePath">文件路径，默认为 "./images/timing_network.svg"</param>
     public void DrawTiming(string filePath = "./images/timing_network.svg")
     {
-        blastDrawer.DrawTimingNetwork(blastTiming, blastLinePoints, filePath);
+        try
+        {
+            blastDrawer.DrawTimingNetwork(blastTiming, blastLinePoints, filePath);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error occurred in {nameof(DrawTiming)}: {ex.Message}");
+        }
     }
 
     /// <summary>
@@ -103,6 +146,11 @@ public class BlastFactory
     {
         var uniqueTimes = blastTiming.Values.Distinct().OrderBy(t => t).ToList();
         Directory.CreateDirectory("frames");
+        // 清除之前的帧
+        foreach (var file in Directory.EnumerateFiles("frames"))
+        {
+            File.Delete(file);
+        }
         for (int i = 0; i < uniqueTimes.Count; i++)
         {
             var currentTime = uniqueTimes[i];
@@ -122,52 +170,43 @@ public class BlastFactory
     /// <param name="folderPath">文件夹路径，默认为 "./images"</param>
     public void DrawCrossSection(string folderPath = "./images")
     {
-        // 确保文件夹路径以 '/' 结尾
-        if (!folderPath.EndsWith("/"))
+        try
         {
-            folderPath += "/";
-        }
-        // 创建文件夹（如果不存在）
-        if (!Directory.Exists(folderPath))
-        {
-            Directory.CreateDirectory(folderPath);
-        }
-        var crossSection = new CrossSection(_config);
-        int count = 1;
-        foreach (var x in _config.CrossSectionXCoordinates)
-        {
-            // 通过顶部多边形和底部多边形计算出剖面图的边界
-            List<Point3D> newEdges = crossSection.CalculateCrossSectionEdges(blastPolygons[0], bottomPolygon, x);
-            // 找到距离 X 最近的炮孔对应的 Y 坐标
-            List<Point3D> newHoles = crossSection.FindNearestBlastHoles(blastHolePositions, x);
-            // 计算轮廓线的角度
-            var angle = Math.Atan2(newEdges[1].Z - newEdges[2].Z, -newEdges[1].Y + newEdges[2].Y);
-            angle = angle * 180 / Math.PI;
-            // Console.WriteLine($"剖面图的角度：{angle:F2}");
-            var hole1 = new Point3D(newHoles[0].X, newHoles[0].Y, newHoles[0].Z);
-            var hole2 = new Point3D(newHoles[0].X, newHoles[0].Y - _config.BlastHoleDiameters[0], newHoles[0].Z);
-            var newLine1 = crossSection.CalculateBlastHoleLine(hole1, hole1.Z - bottomPolygon.Edges.First().Start.Z, angle);
-            var newLine2 = crossSection.CalculateBlastHoleLine(hole2, hole1.Z - bottomPolygon.Edges.First().Start.Z, angle);
-            List<List<Point3D>> newLines = new List<List<Point3D>> { newLine1, newLine2 };
-            hole1 = new Point3D(newHoles[1].X, newHoles[1].Y, newHoles[1].Z);
-            hole2 = new Point3D(newHoles[1].X, newHoles[1].Y - _config.BlastHoleDiameters[1], newHoles[1].Z);
-            newLine1 = crossSection.CalculateBlastHoleLine(hole1, hole1.Z - bottomPolygon.Edges.First().Start.Z, angle);
-            newLine2 = crossSection.CalculateBlastHoleLine(hole2, hole1.Z - bottomPolygon.Edges.First().Start.Z, angle);
-            newLines.AddRange(new List<List<Point3D>> { newLine1, newLine2 });
-            var bottomHoles = crossSection.DivideLine(newEdges[2], newEdges[3], _config.PreSplitHoleOffset, _config.bottomResistanceLine, newHoles.Count - 3);
-            for (int i = 2; i < newHoles.Count; i++)
+            // 确保文件夹路径以 '/' 结尾
+            if (!folderPath.EndsWith("/"))
             {
-                hole1 = new Point3D(newHoles[i].X, newHoles[i].Y, newHoles[i].Z);
-                hole2 = new Point3D(newHoles[i].X, newHoles[i].Y - _config.BlastHoleDiameters[2], newHoles[i].Z);
-                angle = Math.Atan2(hole1.Z - bottomHoles[i].Z, -hole1.Y + bottomHoles[i].Y);
-                var diameter = hole1.Z - bottomPolygon.Edges.First().Start.Z + (i > 1 ? _config.Depth * Math.Sin(angle) : 0);
-                angle = angle * 180 / Math.PI;
-                var newLine = crossSection.CalculateBlastHoleLine(hole1, diameter, angle);
-                newLines.Add(newLine);
-                newLine = crossSection.CalculateBlastHoleLine(hole2, diameter, angle);
-                newLines.Add(newLine);
+                folderPath += "/";
             }
-            blastDrawer.DrawCrossSection(newEdges, newLines, folderPath + "cross_section_" + count++ + ".svg");
+            // 创建文件夹（如果不存在）
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+            var crossSection = new CrossSection(_config);
+            int count = 1;
+            foreach (var x in _config.CrossSectionXCoordinates)
+            {
+                var angles = CalculateInclinationAngle(x);
+                // 通过顶部多边形和底部多边形计算出剖面图的边界
+                List<Point3D> newEdges = crossSection.CalculateCrossSectionEdges(blastPolygons[0], bottomPolygon, x);
+                // 找到距离 X 最近的炮孔对应的 Y 坐标
+                List<Point3D> newHoles = crossSection.FindNearestBlastHoles(blastHolePositions, x);
+                List<List<Point3D>> newLines = new List<List<Point3D>>();
+                for (int i = 0; i < newHoles.Count; i++)
+                {
+                    var diameter = newHoles[i].Z - bottomPolygon.Edges.First().Start.Z + (i > 1 || hasNoPermanentEdge ? _config.Depth * Math.Sin(angles[i]) : 0);
+                    var hole1 = newHoles[i];
+                    var hole2 = new Point3D(hole1.X, hole1.Y - _config.BlastHoleDiameters[i > 1 || hasNoPermanentEdge ? 2 : i], hole1.Z);
+                    newLines.Add(crossSection.CalculateBlastHoleLine(hole1, diameter, angles[i]));
+                    newLines.Add(crossSection.CalculateBlastHoleLine(hole2, diameter, angles[i]));
+                }
+                blastDrawer.DrawCrossSection(newEdges, newLines, folderPath + "cross_section_" + count++ + ".svg", hasNoPermanentEdge);
+                // Console.WriteLine($"绘制剖面图 {count - 1} 完成！");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error occurred in {nameof(DrawCrossSection)}: {ex.Message}");
         }
     }
 
@@ -204,17 +243,25 @@ public class BlastFactory
     /// <returns>最后一行有炮孔的炮孔排的最小距离的最大最小值</returns>
     public (double, double) GetLastRowHoleDistance()
     {
-        // 取从后往前第一个不为空的炮孔排
-        var lastRowHoles = holePositionLists.Last(row => row.Any());
-        double maxDistance = 0;
-        double minDistance = 1e9;
-        foreach (var hole in lastRowHoles)
+        try
         {
-            var distance = ((PreSplitPolygon)blastPolygons[0]).FindNearestDistanceToFreeEdge(hole.Top);
-            maxDistance = Math.Max(maxDistance, distance);
-            minDistance = Math.Min(minDistance, distance);
+            // 取从后往前第一个不为空的炮孔排
+            var lastRowHoles = holePositionLists.Last(row => row.Any());
+            double maxDistance = 0;
+            double minDistance = 1e9;
+            foreach (var hole in lastRowHoles)
+            {
+                var distance = ((PreSplitPolygon)blastPolygons[0]).FindNearestDistanceToFreeEdge(hole.Top);
+                maxDistance = Math.Max(maxDistance, distance);
+                minDistance = Math.Min(minDistance, distance);
+            }
+            return (maxDistance, minDistance);
         }
-        return (maxDistance, minDistance);
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error occurred in {nameof(GetLastRowHoleDistance)}: {ex.Message}");
+            return (0, 0);
+        }
     }
 
     /// <summary>
@@ -222,9 +269,17 @@ public class BlastFactory
     /// </summary>
     public int GetMainBlastHoleRows()
     {
-        // 排除没有孔的情况
-        int nonEmptyRows = holePositionLists.Count(row => row.Any());
-        return hasNoPermanentEdge ? nonEmptyRows : nonEmptyRows - 2;
+        try
+        {
+            // 排除没有孔的情况
+            int nonEmptyRows = holePositionLists.Count(row => row.Any());
+            return hasNoPermanentEdge ? nonEmptyRows : nonEmptyRows - 2;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error occurred in {nameof(GetMainBlastHoleRows)}: {ex.Message}");
+            return 0;
+        }
     }
 
     // 私有辅助方法
@@ -278,10 +333,9 @@ public class BlastFactory
         var topEdges = CreateEdges(_config.TopPoints, _config.TopStyle);
         var bottomEdges = CreateEdges(_config.BottomPoints, _config.BottomStyle);
         bottomPolygon = new PreSplitPolygon(bottomEdges);
-        _config.CrossSectionXCoordinates[0] = minX + (maxX - minX) * 1 / 5;
-        _config.CrossSectionXCoordinates[1] = minX + (maxX - minX) * 2 / 5;
-        _config.CrossSectionXCoordinates[2] = minX + (maxX - minX) * 3 / 5;
-        _config.CrossSectionXCoordinates[3] = minX + (maxX - minX) * 4 / 5;
+        _config.CrossSectionXCoordinates[0] = minX + (maxX - minX) * 1 / 3;
+        _config.CrossSectionXCoordinates[1] = minX + (maxX - minX) * 1 / 2;
+        _config.CrossSectionXCoordinates[2] = minX + (maxX - minX) * 2 / 3;
         return new PreSplitPolygon(topEdges, _config.MinDistanceToFreeLine);
     }
 
@@ -317,7 +371,7 @@ public class BlastFactory
         var mainBlastPolygon = initialPolygon.Offset(offset, true) as MainBlastPolygon;
         if (mainBlastPolygon == null)
         {
-            Console.WriteLine("主爆孔多边形为空！");
+            // Console.WriteLine("主爆孔多边形为空！");
             return;
         }
         blastPolygons.Add(mainBlastPolygon);
@@ -330,7 +384,7 @@ public class BlastFactory
             mainBlastPolygon = prevPolygon.Offset(_config.MainBlastHoleOffset) as MainBlastPolygon;
             if (mainBlastPolygon == null)
             {
-                Console.WriteLine("主爆孔多边形为空！");
+                // Console.WriteLine("主爆孔多边形为空！");
                 break;
             }
             blastPolygons.Add(mainBlastPolygon);
@@ -346,7 +400,7 @@ public class BlastFactory
         int count = 1;
         for (int i = 0; i < blastHolePositions.Count; i++)
         {
-            List<Point3D> sortedHoles = HoleSort.Sort(blastPolygons[i], blastHolePositions[i], (PreSplitPolygon)blastPolygons[0]);
+            List<Point3D> sortedHoles = HoleSort.Sort(blastPolygons[i], blastHolePositions[i]);
             holePositionLists.Add(new List<HolePosition>());
             for (int j = 0; j < sortedHoles.Count; j++)
             {
@@ -363,15 +417,14 @@ public class BlastFactory
                 holePosition.RowId = i + 1;
                 holePosition.ColumnId = j + 1;
                 holePosition.HoleId = count++;
-                if (i == 0)
+                if (i == 0 && !hasNoPermanentEdge)
                 {
                     var bottomHole = bottomPolygon.FindNearestPoint(holePosition.Top);
                     holePosition.Bottom = bottomHole;
                 }
                 else
                 {
-                    var angle = _config.InclinationAngle * Math.PI / 180;
-                    var diameter = holePosition.Top.Z - bottomPolygon.Edges.First().Start.Z + (i > 1 ? _config.Depth * Math.Sin(angle) : 0);
+                    var diameter = holePosition.Top.Z - bottomPolygon.Edges.First().Start.Z + (i > 1 || hasNoPermanentEdge ? _config.Depth * Math.Sin(inclinationAngle[i]) : 0);
                     var end = new Point3D(holePosition.Top.X, holePosition.Top.Y + diameter / Math.Tan(inclinationAngle[i]), holePosition.Top.Z - diameter);
                     holePosition.Bottom = end;
                 }
@@ -381,11 +434,11 @@ public class BlastFactory
     }
 
     // 根据中间剖面确定每一排炮孔的倾斜角度
-    private void CalculateInclinationAngle(double x)
+    private List<double> CalculateInclinationAngle(double x)
     {
-        inclinationAngle.Clear();
-        // inclinationAngle 初始化为长度为 blastHolePositions.Count 的数组，每个元素为 90 度
-        inclinationAngle.AddRange(Enumerable.Repeat(90.0, blastHolePositions.Count));
+        var angles = new List<double>();
+        // angle 初始化为长度为 blastHolePositions.Count 的数组，每个元素为 90 度
+        angles.AddRange(Enumerable.Repeat(Math.PI / 2, blastHolePositions.Count));
         var crossSection = new CrossSection(_config);
         List<Point3D> newEdges = crossSection.CalculateCrossSectionEdges(blastPolygons[0], bottomPolygon, x);
         List<Point3D> newHoles = crossSection.FindNearestBlastHoles(blastHolePositions, x);
@@ -401,7 +454,53 @@ public class BlastFactory
         for (int i = 0; i < newHoles.Count; i++)
         {
             var angle = Math.Atan2(newHoles[i].Z - bottomHoles[i].Z, -newHoles[i].Y + bottomHoles[i].Y);
-            inclinationAngle[i] = angle;
+            angles[i] = angle;
         }
+        return angles;
+    }
+
+    // 实现 IDisposable 接口
+    private bool disposed = false;
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposed)
+        {
+            if (disposing)
+            {
+                // 释放托管资源
+                bottomPolygon.Dispose();
+                foreach (var polygon in blastPolygons)
+                {
+                    polygon.Dispose();
+                }
+                blastPolygons.Clear();
+                blastHolePositions.Clear();
+                foreach (var holePositionList in holePositionLists)
+                {
+                    holePositionList.Clear();
+                }
+                holePositionLists.Clear();
+                blastTiming.Clear();
+                foreach (var linePoints in blastLinePoints)
+                {
+                    linePoints.Clear();
+                }
+                blastLinePoints.Clear();
+                inclinationAngle.Clear();
+            }
+            // 释放非托管资源（如果有）
+            disposed = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    ~BlastFactory()
+    {
+        Dispose(false);
     }
 }

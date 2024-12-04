@@ -78,8 +78,7 @@ public class CrossSection
     // 计算炮孔线条的坐标，从起点开始，倾斜角度为 inclinationAngle 度，终点在下底面上
     public List<Point3D> CalculateBlastHoleLine(Point3D hole, double diameter, double inclinationAngle)
     {
-        var angle = inclinationAngle * Math.PI / 180;
-        var end = new Point3D(hole.X, hole.Y + diameter / Math.Tan(angle), hole.Z - diameter);
+        var end = new Point3D(hole.X, hole.Y + diameter / Math.Tan(inclinationAngle), hole.Z - diameter);
         return new List<Point3D> { hole, end };
     }
 
@@ -88,7 +87,7 @@ public class CrossSection
     {
         List<Point3D> points = new List<Point3D> { start };
         // 添加从 start 到 end 距离为 startPadding 的点
-        var newStart = start + startPadding * (end - start).Normalize();
+        var newStart = start - startPadding * (end - start).Normalize();
         points.Add(newStart);
         var newEnd = end - endPadding * (end - start).Normalize();
         for (int i = 1; i <= count; i++)
@@ -99,6 +98,12 @@ public class CrossSection
             points.Add(new Point3D(x, y, z));
         }
         points.Add(newEnd);
+        // Console.WriteLine("Start: " + start + ", End: " + end);
+        // // 打印等分点坐标
+        // foreach (var point in points)
+        // {
+        //     Console.WriteLine(point);
+        // }
         return points;
     }
 
@@ -116,5 +121,29 @@ public class CrossSection
         }
         points.Add(newEnd);
         return points;
+    }
+
+    // 实现 IDisposable 接口
+    private bool disposed = false;
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposed)
+        {
+            if (disposing)
+            {
+                _config.Dispose();
+            }
+            // 释放非托管资源
+        }
+        disposed = true;
+    }
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+    ~CrossSection()
+    {
+        Dispose(false);
     }
 }

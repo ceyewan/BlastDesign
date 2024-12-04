@@ -6,15 +6,15 @@ public class BlastDrawer
 {
     private static float canvasWidth { get; set; } = 1500;     // 画布的 weith
     private static float canvasHeight { get; set; } = 900;    // 画布的 height
-    private static double holeSpacing { get; set; } = 0;         // 孔的间距
-    private static double rowOffset { get; set; } = 0;           // 行的偏移量
-    private static float scale, offsetX, offsetY;                // 缩放比例，偏移量
-    private static double maxX, maxY, minX, minY;                 // 最大最小坐标
-    private static Point3D startPoint;
+    private double holeSpacing { get; set; } = 0;         // 孔的间距
+    private double rowOffset { get; set; } = 0;           // 行的偏移量
+    private float scale, offsetX, offsetY;                // 缩放比例，偏移量
+    private double maxX, maxY, minX, minY;                 // 最大最小坐标
+    private Point3D startPoint;
 
-    public BlastDrawer(double maxX, double maxY, double minX, double minY, double spacing, double offset)
+    public BlastDrawer(double rightBoundaryX, double rightBoundaryY, double leftBoundaryX, double leftBoundaryY, double spacing, double offset)
     {
-        BlastDrawer.maxX = maxX; BlastDrawer.maxY = maxY; BlastDrawer.minX = minX; BlastDrawer.minY = minY;
+        maxX = rightBoundaryX; maxY = rightBoundaryY + (rightBoundaryY - leftBoundaryY) / 10; minX = leftBoundaryX; minY = leftBoundaryY - (rightBoundaryY - leftBoundaryY) / 10;
         scale = (float)Math.Min(canvasWidth / (maxX - minX), canvasHeight / (maxY - minY)) * 0.9f;
         // offsetX = (float)(canvasWidth - ((canvasWidth - (maxX - minX) * scale) / 2 - minX * scale)); // 修改X轴偏移计算
         offsetY = (float)(canvasHeight - ((canvasHeight - (maxY - minY) * scale) / 2 - minY * scale)); // 修改Y轴偏移计算
@@ -25,7 +25,7 @@ public class BlastDrawer
     }
 
     // 绘制孔设计图
-    public void DrawHoleDesign(List<BasePolygon> polygons, List<HashSet<Point3D>> blastHoles, string outputPath = "output.svg", bool HasNoPermanentEdge = false)
+    public void DrawHoleDesign(List<BasePolygon> polygons, List<HashSet<Point3D>> blastHoles, double[] CrossSectionX, string outputPath = "output.svg", bool HasNoPermanentEdge = false)
     {
         using var stream = new SKFileWStream(outputPath);
         var svgCanvas = SKSvgCanvas.Create(new SKRect(0, 0, canvasWidth, canvasHeight), stream);
@@ -33,6 +33,19 @@ public class BlastDrawer
         svgCanvas.Save();
         svgCanvas.Translate(offsetX, offsetY);
         svgCanvas.Scale(scale, -scale);
+        // 绘制竖线，即在 X = x 处沿着 Y 轴方向绘制一条线，表示剖面
+        var paint = new SKPaint
+        {
+            IsAntialias = true,
+            Color = SKColors.Black,
+            StrokeWidth = (float)holeSpacing / 20,
+            Style = SKPaintStyle.Stroke
+        };
+        foreach (var x in CrossSectionX)
+        {
+            svgCanvas.DrawLine((float)x, (float)minY, (float)x, (float)(minY + (maxY - minY) / 10), paint);
+            svgCanvas.DrawLine((float)x, (float)(minY + (maxY - minY) * 9 / 10), (float)x, (float)maxY, paint);
+        }
         // 绘制多边形
         DrawPolygons(svgCanvas, polygons);
         // 绘制各类炮孔
@@ -245,7 +258,7 @@ public class BlastDrawer
         var length = (float)Math.Sqrt(direction.X * direction.X + direction.Y * direction.Y);
         var unitDirection = new SKPoint(direction.X / length, direction.Y / length);
         float arrowHeadLength = (float)holeSpacing / 4;
-        float arrowHeadWidth = (float)holeSpacing / 4;
+        float arrowHeadWidth = (float)holeSpacing / 8;
         var arrowPoint1 = new SKPoint(
             midPoint.X - arrowHeadLength * unitDirection.X + arrowHeadWidth * unitDirection.Y,
             midPoint.Y - arrowHeadLength * unitDirection.Y - arrowHeadWidth * unitDirection.X);
@@ -275,17 +288,17 @@ public class BlastDrawer
         foreach (var (holePosition, blastTime) in timing)
         {
             // 绘制孔
-            canvas.DrawCircle((float)holePosition.X, (float)holePosition.Y, (float)holeSpacing / 10, paint);
+            canvas.DrawCircle((float)holePosition.X, (float)holePosition.Y, (float)holeSpacing / 5, paint);
             // 绘制时间标注
             paint.Color = SKColors.Black;
-            paint.TextSize = (float)holeSpacing / 5;
+            paint.TextSize = (float)holeSpacing / 2;
             paint.Typeface = SKTypeface.Default; // 设置默认字体
             paint.TextAlign = SKTextAlign.Center;
             canvas.Save();
             canvas.Scale(1, -1);
             canvas.DrawText($"{blastTime} ms",
                 (float)holePosition.X,
-                -(float)holePosition.Y - (float)rowOffset / 5,
+                -(float)holePosition.Y - (float)rowOffset / 2,
                 paint);
             canvas.Restore();
         }
@@ -304,7 +317,7 @@ public class BlastDrawer
         canvas.DrawText($"Time: {time} ms", 100, canvasHeight - 50, paint);
     }
 
-    public void DrawCrossSection(List<Point3D> newEdges, List<List<Point3D>> newLines, string outputPath = "cross_section.svg")
+    public void DrawCrossSection(List<Point3D> newEdges, List<List<Point3D>> newLines, string outputPath = "cross_section.svg", bool HasNoPermanentEdge = false)
     {
         using var stream = new SKFileWStream(outputPath);
         var svgCanvas = SKSvgCanvas.Create(new SKRect(0, 0, canvasWidth, canvasHeight), stream);
@@ -344,7 +357,7 @@ public class BlastDrawer
 
         // 绘制剖面图
         DrawCrossSectionEdges(svgCanvas, newEdges);
-        DrawCrossSectionLines(svgCanvas, newLines);
+        DrawCrossSectionLines(svgCanvas, newLines, HasNoPermanentEdge);
         svgCanvas.Restore();
         svgCanvas.Dispose();
     }
@@ -373,7 +386,7 @@ public class BlastDrawer
         canvas.DrawPath(path, paint);
     }
 
-    private void DrawCrossSectionLines(SKCanvas canvas, List<List<Point3D>> newLines)
+    private void DrawCrossSectionLines(SKCanvas canvas, List<List<Point3D>> newLines, bool HasNoPermanentEdge)
     {
         var paint = new SKPaint
         {
@@ -386,11 +399,11 @@ public class BlastDrawer
         int count = 0;
         foreach (var line in newLines)
         {
-            if (count < 2)
+            if (count < 2 && !HasNoPermanentEdge)
             {
                 paint.Color = SKColors.Red;
             }
-            else if (count < 4)
+            else if (count < 4 && !HasNoPermanentEdge)
             {
                 paint.Color = SKColors.Purple;
             }

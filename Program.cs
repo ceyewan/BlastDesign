@@ -29,9 +29,9 @@ class Program
         polygonFactory.DrawCrossSection("./images");                    // 绘制剖面图
         // 提前设置好三种孔的装药结构参数
         polygonFactory.DrawChargeStructure("./images");                 // 绘制装药结构
-        var lastRowHoleDistance = polygonFactory.GetLastRowHoleDistance(); // 获取最后一排炮孔到自由线的最大距离和最小距离
-        double maxDistance = lastRowHoleDistance.Item1;
-        double minDistance = lastRowHoleDistance.Item2;
-        Console.WriteLine("最后一排主爆孔到自由线的最大距离: {0}, 最后一排主爆孔到自由线的最小距离: {1}", maxDistance, minDistance);
+        // var lastRowHoleDistance = polygonFactory.GetLastRowHoleDistance(); // 获取最后一排炮孔到自由线的最大距离和最小距离
+        // double maxDistance = lastRowHoleDistance.Item1;
+        // double minDistance = lastRowHoleDistance.Item2;
+        // Console.WriteLine("最后一排主爆孔到自由线的最大距离: {0}, 最后一排主爆孔到自由线的最小距离: {1}", maxDistance, minDistance);
     }
 }

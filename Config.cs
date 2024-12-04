@@ -21,7 +21,7 @@ public class Config
         "(1171.8889576284473,1028.2720074378565,1951.0240478515625)",
         "(1181.0449398198234,1018.8790263922049,1951.0240478515625)"
     }; // 顶部控制点坐标
-    public string[] TopStyle { get; set; } = new string[] { "1", "4", "3", "4", "1" }; // 顶部控制点类型
+    public string[] TopStyle { get; set; } = new string[] { "1", "4", "4", "4", "1" }; // 顶部控制点类型
     public string[] BottomPoints { get; set; } = new string[] {
         "(1181.0449398198234,1018.8790263922049,1936.428955078125)",
         "(1130.7950548678843,1023.8240149833414,1936.428955078125)",
@@ -29,14 +29,47 @@ public class Config
         "(1171.8889576284473,1028.2720074378565,1936.428955078125)",
         "(1181.0449398198234,1018.8790263922049,1936.428955078125)"
     };//底部控制点坐标
-    public string[] BottomStyle { get; set; } = new string[] { "1", "4", "3", "4", "1" }; // 底部控制点类型
-    public double[] CrossSectionXCoordinates { get; set; } = new double[] { 1, 2, 3, 4 }; // 剖面图的x坐标
+    public string[] BottomStyle { get; set; } = new string[] { "1", "4", "4", "4", "1" }; // 底部控制点类型
+    public double[] CrossSectionXCoordinates { get; set; } = new double[] { 1, 2, 3 }; // 剖面图的x坐标
     public double[] BlastHoleDiameters { get; set; } = new double[] { 0.1, 0.2, 0.2 }; // 三种炮孔的直径
     public double Depth { get; set; } = 2; // 超深
-    public double bottomResistanceLine { get; set; } = 0.8; // 底面抵抗线的距离
+    public double bottomResistanceLine { get; set; } = 1.0; // 底面抵抗线的距离
     public double InclinationAngle { get; set; } = 95; // 倾角
     // 炮孔装药结构参数，包括总长度、孔底加强段长度、炮孔堵塞段长度、装药段间隔长度、装药块长度
     public int[] PreSplitHoleChargeConfig { get; set; } = { 800, 60, 100, 25, 15 };
     public int[] BufferHoleChargeConfig { get; set; } = { 800, 60, 100, 25, 15 };
     public int[] MainBlastHoleChargeConfig { get; set; } = { 800, 60, 100, 25, 15 };
+
+    // 实现 IDisposable 接口
+    private bool disposed = false;
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposed)
+        {
+            if (disposing)
+            {
+                // 释放托管资源
+                TopPoints = Array.Empty<string>();
+                TopStyle = Array.Empty<string>();
+                BottomPoints = Array.Empty<string>();
+                BottomStyle = Array.Empty<string>();
+                CrossSectionXCoordinates = Array.Empty<double>();
+                BlastHoleDiameters = Array.Empty<double>();
+                PreSplitHoleChargeConfig = Array.Empty<int>();
+                BufferHoleChargeConfig = Array.Empty<int>();
+                MainBlastHoleChargeConfig = Array.Empty<int>();
+            }
+            // 释放非托管资源
+            disposed = true;
+        }
+    }
+    ~Config()
+    {
+        Dispose(false);
+    }
 }
