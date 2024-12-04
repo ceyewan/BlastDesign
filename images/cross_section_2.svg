@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1500" height="900">
 	<rect fill="white" width="1500" height="900"/>
-	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-48.8103 -0 -0 -48.8103 50849.6 95275.1)" d="M1021.85 1951.02L1021.85 1951.02L1030.98 1951.02L1030.98 1936.43L1021.85 1936.43L1021.85 1951.02"/>
-	<path fill="none" stroke="red" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-48.8103 -0 -0 -48.8103 50849.6 95275.1)" d="M1030.94 1951.02L1030.94 1936.43"/>
-	<path fill="none" stroke="red" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-48.8103 -0 -0 -48.8103 50849.6 95275.1)" d="M1030.84 1951.02L1030.84 1936.43"/>
-	<path fill="none" stroke="purple" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-48.8103 -0 -0 -48.8103 50849.6 95275.1)" d="M1030.02 1951.02L1030.02 1936.43"/>
-	<path fill="none" stroke="purple" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-48.8103 -0 -0 -48.8103 50849.6 95275.1)" d="M1029.82 1951.02L1029.82 1936.43"/>
-	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-48.8103 -0 -0 -48.8103 50849.6 95275.1)" d="M1027.93 1951.02L1029.07 1934.43"/>
-	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-48.8103 -0 -0 -48.8103 50849.6 95275.1)" d="M1027.73 1951.02L1028.87 1934.43"/>
-	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-48.8103 -0 -0 -48.8103 50849.6 95275.1)" d="M1025.57 1951.02L1025.82 1934.43"/>
-	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-48.8103 -0 -0 -48.8103 50849.6 95275.1)" d="M1025.37 1951.02L1025.62 1934.43"/>
-	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-48.8103 -0 -0 -48.8103 50849.6 95275.1)" d="M1022.89 1951.02L1022.61 1934.43"/>
-	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-48.8103 -0 -0 -48.8103 50849.6 95275.1)" d="M1022.69 1951.02L1022.41 1934.43"/>
+	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-48.8096 -0 -0 -48.8096 50825.8 95273.7)" d="M1021.35 1951.02L1021.35 1951.02L1030.33 1951.02L1030.33 1936.43L1021.35 1936.43L1021.35 1951.02"/>
+	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-48.8096 -0 -0 -48.8096 50825.8 95273.7)" d="M1030.53 1951.02L1030.31 1934.43"/>
+	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-48.8096 -0 -0 -48.8096 50825.8 95273.7)" d="M1030.33 1951.02L1030.11 1934.43"/>
+	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-48.8096 -0 -0 -48.8096 50825.8 95273.7)" d="M1027.7 1951.02L1027.67 1934.43"/>
+	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-48.8096 -0 -0 -48.8096 50825.8 95273.7)" d="M1027.5 1951.02L1027.47 1934.43"/>
+	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-48.8096 -0 -0 -48.8096 50825.8 95273.7)" d="M1025.13 1951.02L1025 1934.43"/>
+	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-48.8096 -0 -0 -48.8096 50825.8 95273.7)" d="M1024.93 1951.02L1024.8 1934.43"/>
+	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-48.8096 -0 -0 -48.8096 50825.8 95273.7)" d="M1022.3 1951.02L1022.36 1934.43"/>
+	<path fill="none" stroke="black" stroke-width="0.044999998" stroke-miterlimit="4" transform="matrix(-48.8096 -0 -0 -48.8096 50825.8 95273.7)" d="M1022.1 1951.02L1022.16 1934.43"/>
 </svg>
