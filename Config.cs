@@ -36,9 +36,10 @@ public class Config
     public double bottomResistanceLine { get; set; } = 1.0; // 底面抵抗线的距离
     public double InclinationAngle { get; set; } = 95; // 倾角
     // 炮孔装药结构参数，包括总长度、孔底加强段长度、炮孔堵塞段长度、装药段间隔长度、装药块长度
-    public int[] PreSplitHoleChargeConfig { get; set; } = { 800, 60, 100, 25, 15 };
-    public int[] BufferHoleChargeConfig { get; set; } = { 800, 60, 100, 25, 15 };
-    public int[] MainBlastHoleChargeConfig { get; set; } = { 800, 60, 100, 25, 15 };
+    public int[] PreSplitHoleChargeParameters { get; set; } = { 800, 60, 100, 25, 15 };
+    public int[] BufferHoleChargeParameters { get; set; } = { 800, 60, 100, 25, 15 };
+    public int[] MainBlastHoleChargeParameters { get; set; } = { 800, 60, 100, 25, 15 };
+    public int BlastHoleIndex { get; set; } = 2; // 起爆炮孔序号，默认是最外面一排，序号从 1 开始
 
     // 实现 IDisposable 接口
     private bool disposed = false;
@@ -60,9 +61,9 @@ public class Config
                 BottomStyle = Array.Empty<string>();
                 CrossSectionXCoordinates = Array.Empty<double>();
                 BlastHoleDiameters = Array.Empty<double>();
-                PreSplitHoleChargeConfig = Array.Empty<int>();
-                BufferHoleChargeConfig = Array.Empty<int>();
-                MainBlastHoleChargeConfig = Array.Empty<int>();
+                PreSplitHoleChargeParameters = Array.Empty<int>();
+                BufferHoleChargeParameters = Array.Empty<int>();
+                MainBlastHoleChargeParameters = Array.Empty<int>();
             }
             // 释放非托管资源
             disposed = true;
