@@ -227,13 +227,13 @@ public class BlastFactory
             Directory.CreateDirectory(folderPath);
         }
         // Console.WriteLine("绘制预裂孔装药结构图：");
-        var newHoleChargeDrawers = new HoleChargeDrawing(_config.PreSplitHoleChargeConfig[0], _config.PreSplitHoleChargeConfig[1], _config.PreSplitHoleChargeConfig[2], _config.PreSplitHoleChargeConfig[3], _config.PreSplitHoleChargeConfig[4]);
+        var newHoleChargeDrawers = new HoleChargeDrawing(_config.PreSplitHoleChargeParameters[0], _config.PreSplitHoleChargeParameters[1], _config.PreSplitHoleChargeParameters[2], _config.PreSplitHoleChargeParameters[3], _config.PreSplitHoleChargeParameters[4]);
         newHoleChargeDrawers.DrawAndSave(folderPath + "pre_split_hole_charge_structure.svg");
         // Console.WriteLine("绘制缓冲孔装药结构图：");
-        newHoleChargeDrawers = new HoleChargeDrawing(_config.BufferHoleChargeConfig[0], _config.BufferHoleChargeConfig[1], _config.BufferHoleChargeConfig[2], _config.BufferHoleChargeConfig[3], _config.BufferHoleChargeConfig[4]);
+        newHoleChargeDrawers = new HoleChargeDrawing(_config.BufferHoleChargeParameters[0], _config.BufferHoleChargeParameters[1], _config.BufferHoleChargeParameters[2], _config.BufferHoleChargeParameters[3], _config.BufferHoleChargeParameters[4]);
         newHoleChargeDrawers.DrawAndSave(folderPath + "buffer_hole_charge_structure.svg");
         // Console.WriteLine("绘制主爆孔装药结构图：");
-        newHoleChargeDrawers = new HoleChargeDrawing(_config.MainBlastHoleChargeConfig[0], _config.MainBlastHoleChargeConfig[1], _config.MainBlastHoleChargeConfig[2], _config.MainBlastHoleChargeConfig[3], _config.MainBlastHoleChargeConfig[4]);
+        newHoleChargeDrawers = new HoleChargeDrawing(_config.MainBlastHoleChargeParameters[0], _config.MainBlastHoleChargeParameters[1], _config.MainBlastHoleChargeParameters[2], _config.MainBlastHoleChargeParameters[3], _config.MainBlastHoleChargeParameters[4]);
         newHoleChargeDrawers.DrawAndSave(folderPath + "main_blast_hole_charge_structure.svg");
     }
 

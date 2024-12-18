@@ -5,6 +5,8 @@ using HolePosition = BlastDesign.tool.HolePosition;
 public class HoleTiming
 {
     private readonly Config _config;
+    private bool flag = true; // 用于标记是否是读取用户输入的孔坐标
+    private HolePosition blastStartPoint = new HolePosition();
     List<List<HolePosition>> holePositions;
     public HoleTiming(List<List<HolePosition>> holePositions, Config config)
     {
@@ -47,10 +49,32 @@ public class HoleTiming
         return holeGroups;
     }
 
-    // 获取中间孔的坐标
-    public int GetMiddleHoleIndex(List<HolePosition> holePositions)
+    // 获取一排中起爆孔的索引
+    public int GetFirstBlastHoleIndex(List<HolePosition> holePositions)
     {
-        return holePositions.Count / 2;
+        if (flag)
+        {
+            flag = false;
+            int blastHoleIndex = 0;
+            if (_config.BlastHoleIndex - 1 < 0)
+            {
+                blastHoleIndex = 0;
+            }
+            else if (_config.BlastHoleIndex - 1 >= holePositions.Count)
+            {
+                blastHoleIndex = holePositions.Count - 1;
+            }
+            else
+            {
+                blastHoleIndex = _config.BlastHoleIndex - 1;
+            }
+            blastStartPoint = holePositions[blastHoleIndex];
+            return _config.BlastHoleIndex - 1;
+        }
+        // 返回炮孔中距离 blastStartPoint 最近的孔的索引
+        int index = holePositions.IndexOf(holePositions.OrderBy(h => (h.Top - blastStartPoint.Top).Length).First());
+        blastStartPoint = holePositions[index];
+        return index;
     }
 
     // 添加到 timing 字典的方法
@@ -102,7 +126,7 @@ public class HoleTiming
                 count++;
                 continue;
             }
-            int index = GetMiddleHoleIndex(holePositions[i]);
+            int index = GetFirstBlastHoleIndex(holePositions[i]);
             blastLines.Add(new List<Point3D> { startPoint, holePositions[i][index].Top });
             startPoint = holePositions[i][index].Top;
             AddToTiming(timing, holePositions[i][index].Top, (holePositions.Count - i - 1 - count) * _config.InterRowDelay);
@@ -136,7 +160,7 @@ public class HoleTiming
                 count++;
                 continue;
             }
-            int index = GetMiddleHoleIndex(holePositions[i]);
+            int index = GetFirstBlastHoleIndex(holePositions[i]);
             blastLines.Add(new List<Point3D> { startPoint, holePositions[i][index].Top });
             startPoint = holePositions[i][index].Top;
             AddToTiming(timing, holePositions[i][index].Top, (holePositions.Count - i - 1 - count) * _config.InterRowDelay);
