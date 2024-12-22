@@ -23,8 +23,6 @@ public class BlastFactory
     private BlastDrawer blastDrawer = null!;
     // 最大最小坐标
     private double maxX = 0, maxY = 0, minX = 1e9, minY = 1e9;
-    // 每排炮孔的倾斜角度
-    private List<double> inclinationAngle = new List<double>();
     // 是否没有永久轮廓线
     private bool hasNoPermanentEdge = false;
 
@@ -39,7 +37,6 @@ public class BlastFactory
             _config = config;
             ProcessPolygons(CreatePreSplitPolygon());
             blastDrawer = new BlastDrawer(maxX, maxY, minX, minY, _config.PreSplitHoleSpacing, _config.PreSplitHoleOffset);
-            inclinationAngle = CalculateInclinationAngle((minX + maxX) / 2);
             AssignHolePosition();
             var holeTiming = new HoleTiming(holePositionLists, _config);
             (blastTiming, blastLinePoints) = holeTiming.TimingHoles(hasNoPermanentEdge);
@@ -131,7 +128,7 @@ public class BlastFactory
     {
         try
         {
-            blastDrawer.DrawTimingNetwork(blastTiming, blastLinePoints, filePath);
+            blastDrawer.DrawTimingNetwork(blastTiming, blastLinePoints, hasNoPermanentEdge ? new List<Point3D>() : blastHolePositions[0].ToList(), filePath);
         }
         catch (Exception ex)
         {
@@ -182,13 +179,13 @@ public class BlastFactory
             {
                 Directory.CreateDirectory(folderPath);
             }
-            var crossSection = new CrossSection(_config);
+            var crossSection = new CrossSection(_config, bottomPolygon, blastPolygons, blastHolePositions);
             int count = 1;
             foreach (var x in _config.CrossSectionXCoordinates)
             {
-                var angles = CalculateInclinationAngle(x);
+                var angles = crossSection.CalculateInclinationAngle(x);
                 // 通过顶部多边形和底部多边形计算出剖面图的边界
-                List<Point3D> newEdges = crossSection.CalculateCrossSectionEdges(blastPolygons[0], bottomPolygon, x);
+                List<Point3D> newEdges = crossSection.CalculateCrossSectionEdges(x);
                 // 找到距离 X 最近的炮孔对应的 Y 坐标
                 List<Point3D> newHoles = crossSection.FindNearestBlastHoles(blastHolePositions, x);
                 List<List<Point3D>> newLines = new List<List<Point3D>>();
@@ -344,11 +341,11 @@ public class BlastFactory
     {
         hasNoPermanentEdge = preSplitPolygon.HasNoPermanentEdge;
         blastPolygons.Add(preSplitPolygon);
-        // 将 preSplitPolygon 的 ExtendedPolygon 转换为 BasePlygon 并添加到 blastPolygons
         if (!hasNoPermanentEdge)
         {
             preSplitPolygon.ArrangeHoles(_config.PreSplitHoleSpacing, _config.IsContourLineEndHoleEnabled);
             blastHolePositions.Add(new HashSet<Point3D>(preSplitPolygon.HolePoints, new Point3DEqualityComparer()));
+            Console.WriteLine("预裂孔数量：" + preSplitPolygon.HolePoints.Count);
             if (preSplitPolygon.Offset(_config.PreSplitHoleOffset) is BufferPolygon bufferPolygon)
             {
                 bufferPolygon.ArrangeHoles(_config.BufferHoleSpacing);
@@ -397,66 +394,8 @@ public class BlastFactory
     // 分配设置孔位
     private void AssignHolePosition()
     {
-        int count = 1;
-        for (int i = 0; i < blastHolePositions.Count; i++)
-        {
-            List<Point3D> sortedHoles = HoleSort.Sort(blastPolygons[i], blastHolePositions[i]);
-            holePositionLists.Add(new List<HolePosition>());
-            for (int j = 0; j < sortedHoles.Count; j++)
-            {
-                var hole = sortedHoles[j];
-                var holePosition = new HolePosition();
-                holePosition.Top = hole;
-                holePosition.Bottom = new Point3D(hole.X, hole.Y, 0);
-                holePosition.HoleStyle = i switch
-                {
-                    0 => HolePosition.HoleType.PreSplitHole,
-                    1 => HolePosition.HoleType.BufferHole,
-                    _ => HolePosition.HoleType.MainBlastHole,
-                };
-                holePosition.RowId = i + 1;
-                holePosition.ColumnId = j + 1;
-                holePosition.HoleId = count++;
-                if (i == 0 && !hasNoPermanentEdge)
-                {
-                    var bottomHole = bottomPolygon.FindNearestPoint(holePosition.Top);
-                    holePosition.Bottom = bottomHole;
-                }
-                else
-                {
-                    var diameter = holePosition.Top.Z - bottomPolygon.Edges.First().Start.Z + (i > 1 || hasNoPermanentEdge ? _config.Depth * Math.Sin(inclinationAngle[i]) : 0);
-                    var end = new Point3D(holePosition.Top.X, holePosition.Top.Y + diameter / Math.Tan(inclinationAngle[i]), holePosition.Top.Z - diameter);
-                    holePosition.Bottom = end;
-                }
-                holePositionLists[i].Add(holePosition);
-            }
-        }
-    }
-
-    // 根据中间剖面确定每一排炮孔的倾斜角度
-    private List<double> CalculateInclinationAngle(double x)
-    {
-        var angles = new List<double>();
-        // angle 初始化为长度为 blastHolePositions.Count 的数组，每个元素为 90 度
-        angles.AddRange(Enumerable.Repeat(Math.PI / 2, blastHolePositions.Count));
-        var crossSection = new CrossSection(_config);
-        List<Point3D> newEdges = crossSection.CalculateCrossSectionEdges(blastPolygons[0], bottomPolygon, x);
-        List<Point3D> newHoles = crossSection.FindNearestBlastHoles(blastHolePositions, x);
-        List<Point3D> bottomHoles;
-        if (hasNoPermanentEdge)
-        {
-            bottomHoles = crossSection.DivideLine(newEdges[2], newEdges[3], _config.bottomResistanceLine, newHoles.Count - 2);
-        }
-        else
-        {
-            bottomHoles = crossSection.DivideLine(newEdges[2], newEdges[3], _config.PreSplitHoleOffset, _config.bottomResistanceLine, newHoles.Count - 3);
-        }
-        for (int i = 0; i < newHoles.Count; i++)
-        {
-            var angle = Math.Atan2(newHoles[i].Z - bottomHoles[i].Z, -newHoles[i].Y + bottomHoles[i].Y);
-            angles[i] = angle;
-        }
-        return angles;
+        var holeBottomPosition = new HoleBottomPosition(_config, bottomPolygon, blastPolygons, blastHolePositions);
+        holePositionLists = holeBottomPosition.GetHoleBottomPosition();
     }
 
     // 实现 IDisposable 接口
@@ -486,7 +425,6 @@ public class BlastFactory
                     linePoints.Clear();
                 }
                 blastLinePoints.Clear();
-                inclinationAngle.Clear();
             }
             // 释放非托管资源（如果有）
             disposed = true;

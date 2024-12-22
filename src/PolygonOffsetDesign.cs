@@ -369,10 +369,24 @@ public class PreSplitPolygon : BasePolygon
 
     public override void ArrangeHoles(double spacing, bool isContourLineEndHoleEnabled = false)
     {
-        // 仅在轮廓边上布置炮孔
-        foreach (var edge in Edges.Where(e => e.style == 3 || e.style == 5))
+        foreach (var edge in Edges)
         {
-            ArrangeHoleOnEdge(edge, spacing, isContourLineEndHoleEnabled);
+            if (edge.style == 3 || edge.style == 5)
+            {
+                ArrangeHoleOnEdge(edge, spacing, isContourLineEndHoleEnabled);
+            }
+        }
+    }
+
+    public void ArrangeHoles(List<int> holeCount, bool isContourLineEndHoleEnabled = false)
+    {
+        int count = 0;
+        foreach (var edge in Edges)
+        {
+            if (edge.style == 3 || edge.style == 5)
+            {
+                ArrangeHoleOnEdge(edge, holeCount[count++], isContourLineEndHoleEnabled);
+            }
         }
     }
 
@@ -473,12 +487,25 @@ public class PreSplitPolygon : BasePolygon
     }
 
     // 在线段上均匀分布点
-    private void ArrangeHoleOnEdge(Edge edge, double holeSpacing, bool isContourLineEndHoleEnabled)
+    private int ArrangeHoleOnEdge(Edge edge, double holeSpacing, bool isContourLineEndHoleEnabled)
     {
         Vector3D direction = edge.Direction();
-        double pointCount = (int)Math.Round(edge.Length() / holeSpacing);
+        int pointCount = (int)Math.Round(edge.Length() / holeSpacing);
         double holeSpacingActual = edge.Length() / pointCount;
         for (int i = 0; i <= pointCount; i++)
+        {
+            Point3D point = edge.Start + i * holeSpacingActual * direction;
+            AddPoint(point, isContourLineEndHoleEnabled);
+        }
+        return pointCount;
+    }
+
+    // 在线段上均匀分布点
+    private void ArrangeHoleOnEdge(Edge edge, int holeCount, bool isContourLineEndHoleEnabled)
+    {
+        Vector3D direction = edge.Direction();
+        double holeSpacingActual = edge.Length() / (holeCount - 1);
+        for (int i = 0; i < holeCount; i++)
         {
             Point3D point = edge.Start + i * holeSpacingActual * direction;
             AddPoint(point, isContourLineEndHoleEnabled);
@@ -561,10 +588,29 @@ public class BufferPolygon : BasePolygon
 
     public override void ArrangeHoles(double interval, bool isContourLineEndHoleEnabled = true)
     {
-        // Console.WriteLine("BufferPolygon ArrangeHoles.");
-        // // 打印 Start 和 End 和 Length
-        // Console.WriteLine($"Start: {StartPoint}, End: {EndPoint}, Length: {TotalLength}");
         double intervalActual = TotalLength / (int)Math.Round(TotalLength / interval);
+        // 从 Start 开始，每隔 interval 布置一个孔，直到 End 为止
+        List<Point3D> tmp = new List<Point3D>();
+        Edge currentEdge = Edges.First(e => e.Start.Equals(StartPoint));
+        double paddingDistance = (StartPoint - currentEdge.Start).Length;
+        while (true)
+        {
+            (List<Point3D> edgePoints, double remainLength) = PlaceHolesAlongEdge(paddingDistance, currentEdge, intervalActual);
+            tmp.AddRange(edgePoints);
+            if (currentEdge.End.Equals(EndPoint))
+            {
+                break;
+            }
+            currentEdge = Edges.First(e => e.Start.Equals(currentEdge.End));
+            paddingDistance = remainLength;
+        }
+        // 缓冲孔，将自由边上的炮孔排除
+        AddPoints(tmp, _preSplitPolygon.GetFreeEdges(), _preSplitPolygon);
+    }
+
+    public void ArrangeHoles(int holeCount, bool isContourLineEndHoleEnabled = true)
+    {
+        double intervalActual = TotalLength / (holeCount - 1);
         // 从 Start 开始，每隔 interval 布置一个孔，直到 End 为止
         List<Point3D> tmp = new List<Point3D>();
         Edge currentEdge = Edges.First(e => e.Start.Equals(StartPoint));

@@ -55,7 +55,7 @@ public class BlastDrawer
     }
 
     // 绘制起爆网络图
-    public void DrawTimingNetwork(Dictionary<Point3D, double> timing, List<List<Point3D>> blastLines, string outputPath = "timing.svg")
+    public void DrawTimingNetwork(Dictionary<Point3D, double> timing, List<List<Point3D>> blastLines, List<Point3D> preSplitHoles, string outputPath = "timing.svg")
     {
         using var stream = new SKFileWStream(outputPath);
         var svgCanvas = SKSvgCanvas.Create(new SKRect(0, 0, canvasWidth, canvasHeight), stream);
@@ -91,6 +91,18 @@ public class BlastDrawer
         svgCanvas.DrawCircle((float)startPoint.X, (float)startPoint.Y, (float)holeSpacing / 2, paint);
         // 绘制孔位和时间标注
         DrawTimingHoles(svgCanvas, timing);
+        // 单独绘制预裂孔
+        paint = new SKPaint
+        {
+            Style = SKPaintStyle.Fill,
+            Color = SKColors.Black,
+            IsAntialias = true
+        };
+        foreach (var hole in preSplitHoles)
+        {
+            // 绘制孔
+            svgCanvas.DrawCircle((float)hole.X, (float)hole.Y, (float)holeSpacing / 5, paint);
+        }
         svgCanvas.Restore();
         svgCanvas.Dispose();
     }
@@ -296,7 +308,7 @@ public class BlastDrawer
             paint.TextAlign = SKTextAlign.Center;
             canvas.Save();
             canvas.Scale(1, -1);
-            canvas.DrawText($"{blastTime} ms",
+            canvas.DrawText($"{blastTime}",
                 (float)holePosition.X,
                 -(float)holePosition.Y - (float)rowOffset / 2,
                 paint);

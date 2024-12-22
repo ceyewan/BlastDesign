@@ -21,7 +21,7 @@ public class Config
         "(1171.8889576284473,1028.2720074378565,1951.0240478515625)",
         "(1181.0449398198234,1018.8790263922049,1951.0240478515625)"
     }; // 顶部控制点坐标
-    public string[] TopStyle { get; set; } = new string[] { "1", "4", "4", "4", "1" }; // 顶部控制点类型
+    public string[] TopStyle { get; set; } = new string[] { "1", "3", "3", "3", "1" }; // 顶部控制点类型
     public string[] BottomPoints { get; set; } = new string[] {
         "(1181.0449398198234,1018.8790263922049,1936.428955078125)",
         "(1130.7950548678843,1023.8240149833414,1936.428955078125)",
@@ -29,7 +29,7 @@ public class Config
         "(1171.8889576284473,1028.2720074378565,1936.428955078125)",
         "(1181.0449398198234,1018.8790263922049,1936.428955078125)"
     };//底部控制点坐标
-    public string[] BottomStyle { get; set; } = new string[] { "1", "4", "4", "4", "1" }; // 底部控制点类型
+    public string[] BottomStyle { get; set; } = new string[] { "1", "3", "3", "3", "1" }; // 底部控制点类型
     public double[] CrossSectionXCoordinates { get; set; } = new double[] { 1, 2, 3 }; // 剖面图的x坐标
     public double[] BlastHoleDiameters { get; set; } = new double[] { 0.1, 0.2, 0.2 }; // 三种炮孔的直径
     public double Depth { get; set; } = 2; // 超深
