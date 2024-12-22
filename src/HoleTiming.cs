@@ -2,83 +2,139 @@ using System.Drawing;
 using MathNet.Spatial.Euclidean;
 using HolePosition = BlastDesign.tool.HolePosition;
 
-public class HoleTiming
+public class HoleTiming : IDisposable
 {
+    #region Fields
     private readonly Config _config;
-    private bool flag = true; // 用于标记是否是读取用户输入的孔坐标
-    private HolePosition blastStartPoint = new HolePosition();
-    List<List<HolePosition>> holePositions;
+    private bool flag = true;  // 标记是否是首次读取用户输入的孔坐标
+    private HolePosition blastStartPoint;  // 起爆点位置
+    private List<List<HolePosition>> holePositions;  // 所有炮孔位置
+    private List<List<Point3D>> blastLines;  // 爆破连接线
+    private bool disposed = false;  // 用于 IDisposable 实现
+    #endregion
+
+    #region Constructor
     public HoleTiming(List<List<HolePosition>> holePositions, Config config)
     {
         _config = config;
         this.holePositions = holePositions;
+        this.blastLines = new List<List<Point3D>>();
+        this.blastStartPoint = new HolePosition();
+    }
+    #endregion
+
+    #region Public Methods
+    /// <summary>
+    /// 计算孔的起爆时间和连接线
+    /// </summary>
+    /// <param name="hasNoPermanentEdge">是否没有永久边坡</param>
+    /// <returns>起爆时间字典和连接线列表</returns>
+    public (Dictionary<Point3D, double>, List<List<Point3D>>) TimingHoles(bool hasNoPermanentEdge)
+    {
+        return hasNoPermanentEdge ? TimingHolesWithoutPermanentEdge() : TimingHoles();
     }
 
-    // 计算几个一组
+    /// <summary>
+    /// 释放资源
+    /// </summary>
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+    #endregion
+
+    #region Private Methods
+    /// <summary>
+    /// 计算预裂孔分组大小
+    /// </summary>
     private int GetGroupSize() => _config.PreSplitHoleCount;
 
-    // 通过组大小和孔的数量计算分组方案
-    List<int> DesignGroup(List<HolePosition> holePositions)
+    /// <summary>
+    /// 设计孔的分组方案
+    /// </summary>
+    private List<int> DesignGroup(List<HolePosition> holePositions)
     {
         int groupSize = GetGroupSize();
         int holeCount = holePositions.Count;
         List<int> group = new List<int>();
-        int remainingHoles = holeCount % groupSize;
-        for (int i = 0; i < holeCount / groupSize; i++)
+
+        // 计算完整组的数量
+        int fullGroups = holeCount / groupSize;
+        for (int i = 0; i < fullGroups; i++)
         {
             group.Add(groupSize);
         }
+
+        // 处理剩余的孔
+        int remainingHoles = holeCount % groupSize;
         if (remainingHoles > 0)
         {
             group.Add(remainingHoles);
         }
+
         return group;
     }
 
-    // 根据分组方案和孔的排序，将孔分组 
-    public List<List<Point3D>> GroupHoles(List<HolePosition> holePositions)
+    /// <summary>
+    /// 将孔按组进行分组，返回虚拟孔位置
+    /// </summary>
+    private List<Point3D> GroupHoles(List<HolePosition> holePositions, bool virtualOnly)
     {
         List<int> group = DesignGroup(holePositions);
-        List<List<Point3D>> holeGroups = new List<List<Point3D>>();
+        List<Point3D> virtualHoles = new List<Point3D>();
         int index = 0;
+
         foreach (var size in group)
         {
-            holeGroups.Add(holePositions.GetRange(index, size).Select(hp => hp.Top).ToList());
+            var currentGroup = holePositions.GetRange(index, size);
+            var groupHoles = currentGroup.Select(hp => hp.Top).ToList();
+
+            // 计算虚拟孔的位置（组内孔的平均位置）
+            double avgX = groupHoles.Average(h => h.X);
+            double avgY = groupHoles.Average(h => h.Y) - _config.PreSplitHoleOffset;
+            double avgZ = groupHoles.Average(h => h.Z);
+
+            var virtualHole = new Point3D(avgX, avgY, avgZ);
+            virtualHoles.Add(virtualHole);
+
+            // 将虚拟孔和组内所有孔连接
+            foreach (var hole in groupHoles)
+            {
+                blastLines.Add(new List<Point3D> { virtualHole, hole });
+            }
+
             index += size;
         }
-        return holeGroups;
+        return virtualHoles;
     }
 
-    // 获取一排中起爆孔的索引
-    public int GetFirstBlastHoleIndex(List<HolePosition> holePositions)
+    /// <summary>
+    /// 获取起爆孔的索引
+    /// </summary>
+    private int GetFirstBlastHoleIndex(List<HolePosition> holePositions)
     {
         if (flag)
         {
             flag = false;
-            int blastHoleIndex = 0;
-            if (_config.BlastHoleIndex - 1 < 0)
-            {
-                blastHoleIndex = 0;
-            }
-            else if (_config.BlastHoleIndex - 1 >= holePositions.Count)
-            {
-                blastHoleIndex = holePositions.Count - 1;
-            }
-            else
-            {
-                blastHoleIndex = _config.BlastHoleIndex - 1;
-            }
+            // 首次使用用户指定的起爆孔
+            int blastHoleIndex = Math.Clamp(_config.BlastHoleIndex - 1, 0, holePositions.Count - 1);
             blastStartPoint = holePositions[blastHoleIndex];
-            return _config.BlastHoleIndex - 1;
+            return blastHoleIndex;
         }
-        // 返回炮孔中距离 blastStartPoint 最近的孔的索引
-        int index = holePositions.IndexOf(holePositions.OrderBy(h => (h.Top - blastStartPoint.Top).Length).First());
+
+        // 后续使用距离上一个起爆点最近的孔
+        int index = holePositions.IndexOf(
+            holePositions.OrderBy(h => (h.Top - blastStartPoint.Top).Length).First()
+        );
         blastStartPoint = holePositions[index];
         return index;
     }
 
-    // 添加到 timing 字典的方法
-    public void AddToTiming(Dictionary<Point3D, double> timing, Point3D key, double value)
+    /// <summary>
+    /// 添加起爆时间到字典
+    /// </summary>
+    private void AddToTiming(Dictionary<Point3D, double> timing, Point3D key, double value)
     {
         if (!timing.ContainsKey(key))
         {
@@ -86,38 +142,28 @@ public class HoleTiming
         }
         else
         {
-            // 处理键已存在的情况，例如更新值或忽略
-            timing[key] = value; // 这里选择更新值
+            timing[key] = value;
         }
     }
 
-    public (Dictionary<Point3D, double>, List<List<Point3D>>) TimingHoles(bool hasNoPermanentEdge)
-    {
-        if (!hasNoPermanentEdge)
-        {
-            return TimingHoles();
-        }
-        return TimingHolesWithoutPermanentEdge();
-    }
-
+    /// <summary>
+    /// 计算有永久边坡时的起爆时间
+    /// </summary>
     private (Dictionary<Point3D, double>, List<List<Point3D>>) TimingHoles()
     {
         Dictionary<Point3D, double> timing = new Dictionary<Point3D, double>();
-        List<List<Point3D>> blastLines = new List<List<Point3D>>();
-        HolePosition blastStartPoint = new HolePosition();
-        blastStartPoint.Top = new Point3D(0, 0, 0);
-        var startPoint = blastStartPoint.Top;
-        var holes = GroupHoles(holePositions[0]);
+        var startPoint = new Point3D(0, 0, 0);
+
+        // 处理预裂孔
+        var holes = GroupHoles(holePositions[0], true);
         for (int i = 0; i < holes.Count; i++)
         {
-            for (int j = 0; j < holes[i].Count; j++)
-            {
-                AddToTiming(timing, holes[i][j], i * _config.InterColumnDelay);
-                blastLines.Add(new List<Point3D> { startPoint, holes[i][j] });
-                startPoint = holes[i][j];
-            }
+            AddToTiming(timing, holes[i], i * _config.InterColumnDelay);
+            blastLines.Add(new List<Point3D> { startPoint, holes[i] });
+            startPoint = holes[i];
         }
-        startPoint = blastStartPoint.Top;
+        startPoint = new Point3D(0, 0, 0);
+        // 处理其他孔
         int count = 0;
         for (int i = holePositions.Count - 1; i > 0; i--)
         {
@@ -126,33 +172,21 @@ public class HoleTiming
                 count++;
                 continue;
             }
-            int index = GetFirstBlastHoleIndex(holePositions[i]);
-            blastLines.Add(new List<Point3D> { startPoint, holePositions[i][index].Top });
-            startPoint = holePositions[i][index].Top;
-            AddToTiming(timing, holePositions[i][index].Top, (holePositions.Count - i - 1 - count) * _config.InterRowDelay);
-            for (int j = index - 1; j >= 0; j--)
-            {
-                blastLines.Add(new List<Point3D> { holePositions[i][j + 1].Top, holePositions[i][j].Top });
-                AddToTiming(timing, holePositions[i][j].Top, (holePositions.Count - i - 1 - count) * _config.InterRowDelay + (index - j) * _config.InterColumnDelay);
-            }
-            for (int j = index + 1; j < holePositions[i].Count; j++)
-            {
-                blastLines.Add(new List<Point3D> { holePositions[i][j - 1].Top, holePositions[i][j].Top });
-                AddToTiming(timing, holePositions[i][j].Top, (holePositions.Count - i - 1 - count) * _config.InterRowDelay + (j - index) * _config.InterColumnDelay);
-            }
+            ProcessRowTiming(timing, holePositions[i], startPoint, i, count);
+            startPoint = holePositions[i][GetFirstBlastHoleIndex(holePositions[i])].Top;
         }
-        timing = timing.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
-        return (timing, blastLines);
+        return (timing.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value), blastLines);
     }
 
+    /// <summary>
+    /// 计算无永久边坡时的起爆时间
+    /// </summary>
     private (Dictionary<Point3D, double>, List<List<Point3D>>) TimingHolesWithoutPermanentEdge()
     {
         Dictionary<Point3D, double> timing = new Dictionary<Point3D, double>();
-        List<List<Point3D>> blastLines = new List<List<Point3D>>();
-        HolePosition blastStartPoint = new HolePosition();
-        blastStartPoint.Top = new Point3D(0, 0, 0);
-        var startPoint = blastStartPoint.Top;
+        var startPoint = new Point3D(0, 0, 0);
         int count = 0;
+
         for (int i = holePositions.Count - 1; i >= 0; i--)
         {
             if (holePositions[i].Count == 0)
@@ -160,27 +194,42 @@ public class HoleTiming
                 count++;
                 continue;
             }
-            int index = GetFirstBlastHoleIndex(holePositions[i]);
-            blastLines.Add(new List<Point3D> { startPoint, holePositions[i][index].Top });
-            startPoint = holePositions[i][index].Top;
-            AddToTiming(timing, holePositions[i][index].Top, (holePositions.Count - i - 1 - count) * _config.InterRowDelay);
-            for (int j = index - 1; j >= 0; j--)
-            {
-                blastLines.Add(new List<Point3D> { holePositions[i][j + 1].Top, holePositions[i][j].Top });
-                AddToTiming(timing, holePositions[i][j].Top, (holePositions.Count - i - 1 - count) * _config.InterRowDelay + (index - j) * _config.InterColumnDelay);
-            }
-            for (int j = index + 1; j < holePositions[i].Count; j++)
-            {
-                blastLines.Add(new List<Point3D> { holePositions[i][j - 1].Top, holePositions[i][j].Top });
-                AddToTiming(timing, holePositions[i][j].Top, (holePositions.Count - i - 1 - count) * _config.InterRowDelay + (j - index) * _config.InterColumnDelay);
-            }
+            ProcessRowTiming(timing, holePositions[i], startPoint, i, count);
+            startPoint = holePositions[i][GetFirstBlastHoleIndex(holePositions[i])].Top;
         }
-        timing = timing.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
-        return (timing, blastLines);
+
+        return (timing.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value), blastLines);
     }
 
-    // 实现 IDisposable 接口
-    private bool disposed = false;
+    /// <summary>
+    /// 处理单排孔的起爆时间
+    /// </summary>
+    private void ProcessRowTiming(Dictionary<Point3D, double> timing, List<HolePosition> row, Point3D startPoint, int rowIndex, int emptyRowCount)
+    {
+        int index = GetFirstBlastHoleIndex(row);
+        blastLines.Add(new List<Point3D> { startPoint, row[index].Top });
+
+        double baseDelay = (holePositions.Count - rowIndex - 1 - emptyRowCount) * _config.InterRowDelay;
+        AddToTiming(timing, row[index].Top, baseDelay);
+
+        // 处理左侧孔
+        for (int j = index - 1; j >= 0; j--)
+        {
+            blastLines.Add(new List<Point3D> { row[j + 1].Top, row[j].Top });
+            AddToTiming(timing, row[j].Top, baseDelay + (index - j) * _config.InterColumnDelay);
+        }
+
+        // 处理右侧孔
+        for (int j = index + 1; j < row.Count; j++)
+        {
+            blastLines.Add(new List<Point3D> { row[j - 1].Top, row[j].Top });
+            AddToTiming(timing, row[j].Top, baseDelay + (j - index) * _config.InterColumnDelay);
+        }
+    }
+
+    /// <summary>
+    /// 释放资源的具体实现
+    /// </summary>
     protected virtual void Dispose(bool disposing)
     {
         if (!disposed)
@@ -193,19 +242,15 @@ public class HoleTiming
                 }
                 holePositions.Clear();
             }
-            // 释放非托管资源
             disposed = true;
         }
     }
+    #endregion
 
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
+    #region Destructor
     ~HoleTiming()
     {
         Dispose(false);
     }
+    #endregion
 }
