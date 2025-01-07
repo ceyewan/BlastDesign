@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1500" height="300">
-	<rect fill="white" width="1500" height="300"/>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="2000" height="300">
+	<rect fill="white" width="2000" height="300"/>
 	<path fill="none" stroke="black" stroke-width="2" stroke-miterlimit="4" d="M50 100L850 100"/>
 	<path fill="none" stroke="red" stroke-width="1" stroke-miterlimit="4" d="M50 96L900 96"/>
 	<path fill="none" stroke="green" stroke-width="1" stroke-miterlimit="4" d="M50 93L900 93"/>
@@ -13,36 +13,49 @@
 	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="437.19199, 441.99197, 446.79199, 451.59198, 455.96799, " y="130, ">
 			800cm
 	</text>
-	<rect fill="red" x="50" y="85" width="60" height="15"/>
-	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="50" y="85" width="60" height="15"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M50 120L110 120"/>
+	<rect fill="red" x="50" y="85" width="1" height="15"/>
+	<rect fill="red" x="50" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="50" y="90" width="25" height="10"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M50 120L75 120"/>
 	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M50 120L53 118.5L53 121.5L50 120Z"/>
 	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M50 117L50 123"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M110 120L107 118.5L107 121.5L110 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M110 117L110 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="52.260002, 57.060001, 61.860001, 66.236, 73.076004, 75.740005, 83.740005, 91.740005, 99.740005, " y="115, ">
-			60cm 孔底加强
-	</text>
-	<rect fill="red" x="135" y="90" width="15" height="10"/>
-	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="135" y="90" width="15" height="10"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M110 120L135 120"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M110 120L113 118.5L113 121.5L110 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M110 117L110 123"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M135 120L132 118.5L132 121.5L135 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M135 117L135 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="117.7, 122.5, " y="115, ">
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M75 120L72 118.5L72 121.5L75 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M75 117L75 123"/>
+	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="57.700001, 62.5, " y="115, ">
 			25
 	</text>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M135 120L150 120"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M135 120L138 118.5L138 121.5L135 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M135 117L135 123"/>
+	<rect fill="red" x="75" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="75" y="90" width="25" height="10"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M75 120L100 120"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M75 120L78 118.5L78 121.5L75 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M75 117L75 123"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M100 120L97 118.5L97 121.5L100 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M100 117L100 123"/>
+	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="82.699997, 87.5, " y="115, ">
+			25
+	</text>
+	<rect fill="red" x="100" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="100" y="90" width="25" height="10"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M100 120L125 120"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M100 120L103 118.5L103 121.5L100 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M100 117L100 123"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M125 120L122 118.5L122 121.5L125 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M125 117L125 123"/>
+	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="107.7, 112.5, " y="115, ">
+			25
+	</text>
+	<rect fill="red" x="125" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="125" y="90" width="25" height="10"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M125 120L150 120"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M125 120L128 118.5L128 121.5L125 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M125 117L125 123"/>
 	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M150 120L147 118.5L147 121.5L150 120Z"/>
 	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M150 117L150 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="138.496, 141.70399, " y="115, ">
-			15
+	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="132.7, 137.5, " y="115, ">
+			25
 	</text>
-	<rect fill="red" x="175" y="90" width="15" height="10"/>
-	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="175" y="90" width="15" height="10"/>
+	<rect fill="red" x="150" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="150" y="90" width="25" height="10"/>
 	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M150 120L175 120"/>
 	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M150 120L153 118.5L153 121.5L150 120Z"/>
 	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M150 117L150 123"/>
@@ -51,88 +64,78 @@
 	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="157.7, 162.5, " y="115, ">
 			25
 	</text>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M175 120L190 120"/>
+	<rect fill="red" x="175" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="175" y="90" width="25" height="10"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M175 120L200 120"/>
 	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M175 120L178 118.5L178 121.5L175 120Z"/>
 	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M175 117L175 123"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M190 120L187 118.5L187 121.5L190 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M190 117L190 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="178.496, 181.70399, " y="115, ">
-			15
-	</text>
-	<rect fill="red" x="215" y="90" width="15" height="10"/>
-	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="215" y="90" width="15" height="10"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M190 120L215 120"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M190 120L193 118.5L193 121.5L190 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M190 117L190 123"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M215 120L212 118.5L212 121.5L215 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M215 117L215 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="197.7, 202.5, " y="115, ">
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M200 120L197 118.5L197 121.5L200 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M200 117L200 123"/>
+	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="182.7, 187.5, " y="115, ">
 			25
 	</text>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M215 120L230 120"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M215 120L218 118.5L218 121.5L215 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M215 117L215 123"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M230 120L227 118.5L227 121.5L230 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M230 117L230 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="218.496, 221.70399, " y="115, ">
-			15
-	</text>
-	<rect fill="red" x="255" y="90" width="15" height="10"/>
-	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="255" y="90" width="15" height="10"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M230 120L255 120"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M230 120L233 118.5L233 121.5L230 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M230 117L230 123"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M255 120L252 118.5L252 121.5L255 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M255 117L255 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="237.7, 242.5, " y="115, ">
+	<rect fill="red" x="200" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="200" y="90" width="25" height="10"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M200 120L225 120"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M200 120L203 118.5L203 121.5L200 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M200 117L200 123"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M225 120L222 118.5L222 121.5L225 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M225 117L225 123"/>
+	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="207.7, 212.5, " y="115, ">
 			25
 	</text>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M255 120L270 120"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M255 120L258 118.5L258 121.5L255 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M255 117L255 123"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M270 120L267 118.5L267 121.5L270 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M270 117L270 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="258.496, 261.70401, " y="115, ">
-			15
-	</text>
-	<rect fill="red" x="295" y="90" width="15" height="10"/>
-	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="295" y="90" width="15" height="10"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M270 120L295 120"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M270 120L273 118.5L273 121.5L270 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M270 117L270 123"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M295 120L292 118.5L292 121.5L295 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M295 117L295 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="277.70001, 282.5, " y="115, ">
+	<rect fill="red" x="225" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="225" y="90" width="25" height="10"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M225 120L250 120"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M225 120L228 118.5L228 121.5L225 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M225 117L225 123"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M250 120L247 118.5L247 121.5L250 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M250 117L250 123"/>
+	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="232.7, 237.5, " y="115, ">
 			25
 	</text>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M295 120L310 120"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M295 120L298 118.5L298 121.5L295 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M295 117L295 123"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M310 120L307 118.5L307 121.5L310 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M310 117L310 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="298.496, 301.70401, " y="115, ">
-			15
-	</text>
-	<rect fill="red" x="335" y="90" width="15" height="10"/>
-	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="335" y="90" width="15" height="10"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M310 120L335 120"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M310 120L313 118.5L313 121.5L310 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M310 117L310 123"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M335 120L332 118.5L332 121.5L335 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M335 117L335 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="317.70001, 322.5, " y="115, ">
+	<rect fill="red" x="250" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="250" y="90" width="25" height="10"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M250 120L275 120"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M250 120L253 118.5L253 121.5L250 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M250 117L250 123"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M275 120L272 118.5L272 121.5L275 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M275 117L275 123"/>
+	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="257.70001, 262.5, " y="115, ">
 			25
 	</text>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M335 120L350 120"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M335 120L338 118.5L338 121.5L335 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M335 117L335 123"/>
+	<rect fill="red" x="275" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="275" y="90" width="25" height="10"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M275 120L300 120"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M275 120L278 118.5L278 121.5L275 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M275 117L275 123"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M300 120L297 118.5L297 121.5L300 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M300 117L300 123"/>
+	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="282.70001, 287.5, " y="115, ">
+			25
+	</text>
+	<rect fill="red" x="300" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="300" y="90" width="25" height="10"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M300 120L325 120"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M300 120L303 118.5L303 121.5L300 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M300 117L300 123"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M325 120L322 118.5L322 121.5L325 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M325 117L325 123"/>
+	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="307.70001, 312.5, " y="115, ">
+			25
+	</text>
+	<rect fill="red" x="325" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="325" y="90" width="25" height="10"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M325 120L350 120"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M325 120L328 118.5L328 121.5L325 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M325 117L325 123"/>
 	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M350 120L347 118.5L347 121.5L350 120Z"/>
 	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M350 117L350 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="338.496, 341.70401, " y="115, ">
-			15
+	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="332.70001, 337.5, " y="115, ">
+			25
 	</text>
-	<rect fill="red" x="375" y="90" width="15" height="10"/>
-	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="375" y="90" width="15" height="10"/>
+	<rect fill="red" x="350" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="350" y="90" width="25" height="10"/>
 	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M350 120L375 120"/>
 	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M350 120L353 118.5L353 121.5L350 120Z"/>
 	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M350 117L350 123"/>
@@ -141,88 +144,78 @@
 	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="357.70001, 362.5, " y="115, ">
 			25
 	</text>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M375 120L390 120"/>
+	<rect fill="red" x="375" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="375" y="90" width="25" height="10"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M375 120L400 120"/>
 	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M375 120L378 118.5L378 121.5L375 120Z"/>
 	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M375 117L375 123"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M390 120L387 118.5L387 121.5L390 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M390 117L390 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="378.496, 381.70401, " y="115, ">
-			15
-	</text>
-	<rect fill="red" x="415" y="90" width="15" height="10"/>
-	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="415" y="90" width="15" height="10"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M390 120L415 120"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M390 120L393 118.5L393 121.5L390 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M390 117L390 123"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M415 120L412 118.5L412 121.5L415 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M415 117L415 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="397.70001, 402.5, " y="115, ">
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M400 120L397 118.5L397 121.5L400 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M400 117L400 123"/>
+	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="382.70001, 387.5, " y="115, ">
 			25
 	</text>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M415 120L430 120"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M415 120L418 118.5L418 121.5L415 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M415 117L415 123"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M430 120L427 118.5L427 121.5L430 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M430 117L430 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="418.496, 421.70401, " y="115, ">
-			15
-	</text>
-	<rect fill="red" x="455" y="90" width="15" height="10"/>
-	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="455" y="90" width="15" height="10"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M430 120L455 120"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M430 120L433 118.5L433 121.5L430 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M430 117L430 123"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M455 120L452 118.5L452 121.5L455 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M455 117L455 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="437.70001, 442.5, " y="115, ">
+	<rect fill="red" x="400" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="400" y="90" width="25" height="10"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M400 120L425 120"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M400 120L403 118.5L403 121.5L400 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M400 117L400 123"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M425 120L422 118.5L422 121.5L425 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M425 117L425 123"/>
+	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="407.70001, 412.5, " y="115, ">
 			25
 	</text>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M455 120L470 120"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M455 120L458 118.5L458 121.5L455 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M455 117L455 123"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M470 120L467 118.5L467 121.5L470 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M470 117L470 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="458.496, 461.70401, " y="115, ">
-			15
-	</text>
-	<rect fill="red" x="495" y="90" width="15" height="10"/>
-	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="495" y="90" width="15" height="10"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M470 120L495 120"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M470 120L473 118.5L473 121.5L470 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M470 117L470 123"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M495 120L492 118.5L492 121.5L495 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M495 117L495 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="477.70001, 482.5, " y="115, ">
+	<rect fill="red" x="425" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="425" y="90" width="25" height="10"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M425 120L450 120"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M425 120L428 118.5L428 121.5L425 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M425 117L425 123"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M450 120L447 118.5L447 121.5L450 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M450 117L450 123"/>
+	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="432.70001, 437.5, " y="115, ">
 			25
 	</text>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M495 120L510 120"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M495 120L498 118.5L498 121.5L495 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M495 117L495 123"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M510 120L507 118.5L507 121.5L510 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M510 117L510 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="498.496, 501.70401, " y="115, ">
-			15
-	</text>
-	<rect fill="red" x="535" y="90" width="15" height="10"/>
-	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="535" y="90" width="15" height="10"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M510 120L535 120"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M510 120L513 118.5L513 121.5L510 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M510 117L510 123"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M535 120L532 118.5L532 121.5L535 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M535 117L535 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="517.70001, 522.5, " y="115, ">
+	<rect fill="red" x="450" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="450" y="90" width="25" height="10"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M450 120L475 120"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M450 120L453 118.5L453 121.5L450 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M450 117L450 123"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M475 120L472 118.5L472 121.5L475 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M475 117L475 123"/>
+	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="457.70001, 462.5, " y="115, ">
 			25
 	</text>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M535 120L550 120"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M535 120L538 118.5L538 121.5L535 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M535 117L535 123"/>
+	<rect fill="red" x="475" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="475" y="90" width="25" height="10"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M475 120L500 120"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M475 120L478 118.5L478 121.5L475 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M475 117L475 123"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M500 120L497 118.5L497 121.5L500 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M500 117L500 123"/>
+	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="482.70001, 487.5, " y="115, ">
+			25
+	</text>
+	<rect fill="red" x="500" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="500" y="90" width="25" height="10"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M500 120L525 120"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M500 120L503 118.5L503 121.5L500 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M500 117L500 123"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M525 120L522 118.5L522 121.5L525 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M525 117L525 123"/>
+	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="507.70001, 512.5, " y="115, ">
+			25
+	</text>
+	<rect fill="red" x="525" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="525" y="90" width="25" height="10"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M525 120L550 120"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M525 120L528 118.5L528 121.5L525 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M525 117L525 123"/>
 	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M550 120L547 118.5L547 121.5L550 120Z"/>
 	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M550 117L550 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="538.49597, 541.70398, " y="115, ">
-			15
+	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="532.70001, 537.5, " y="115, ">
+			25
 	</text>
-	<rect fill="red" x="575" y="90" width="15" height="10"/>
-	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="575" y="90" width="15" height="10"/>
+	<rect fill="red" x="550" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="550" y="90" width="25" height="10"/>
 	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M550 120L575 120"/>
 	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M550 120L553 118.5L553 121.5L550 120Z"/>
 	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M550 117L550 123"/>
@@ -231,85 +224,75 @@
 	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="557.70001, 562.5, " y="115, ">
 			25
 	</text>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M575 120L590 120"/>
+	<rect fill="red" x="575" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="575" y="90" width="25" height="10"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M575 120L600 120"/>
 	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M575 120L578 118.5L578 121.5L575 120Z"/>
 	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M575 117L575 123"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M590 120L587 118.5L587 121.5L590 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M590 117L590 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="578.49597, 581.70398, " y="115, ">
-			15
-	</text>
-	<rect fill="red" x="615" y="90" width="15" height="10"/>
-	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="615" y="90" width="15" height="10"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M590 120L615 120"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M590 120L593 118.5L593 121.5L590 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M590 117L590 123"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M615 120L612 118.5L612 121.5L615 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M615 117L615 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="597.70001, 602.5, " y="115, ">
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M600 120L597 118.5L597 121.5L600 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M600 117L600 123"/>
+	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="582.70001, 587.5, " y="115, ">
 			25
 	</text>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M615 120L630 120"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M615 120L618 118.5L618 121.5L615 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M615 117L615 123"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M630 120L627 118.5L627 121.5L630 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M630 117L630 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="618.49597, 621.70398, " y="115, ">
-			15
-	</text>
-	<rect fill="red" x="655" y="90" width="15" height="10"/>
-	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="655" y="90" width="15" height="10"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M630 120L655 120"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M630 120L633 118.5L633 121.5L630 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M630 117L630 123"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M655 120L652 118.5L652 121.5L655 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M655 117L655 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="637.70001, 642.5, " y="115, ">
+	<rect fill="red" x="600" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="600" y="90" width="25" height="10"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M600 120L625 120"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M600 120L603 118.5L603 121.5L600 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M600 117L600 123"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M625 120L622 118.5L622 121.5L625 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M625 117L625 123"/>
+	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="607.70001, 612.5, " y="115, ">
 			25
 	</text>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M655 120L670 120"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M655 120L658 118.5L658 121.5L655 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M655 117L655 123"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M670 120L667 118.5L667 121.5L670 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M670 117L670 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="658.49597, 661.70398, " y="115, ">
-			15
-	</text>
-	<rect fill="red" x="695" y="90" width="15" height="10"/>
-	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="695" y="90" width="15" height="10"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M670 120L695 120"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M670 120L673 118.5L673 121.5L670 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M670 117L670 123"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M695 120L692 118.5L692 121.5L695 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M695 117L695 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="677.70001, 682.5, " y="115, ">
+	<rect fill="red" x="625" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="625" y="90" width="25" height="10"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M625 120L650 120"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M625 120L628 118.5L628 121.5L625 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M625 117L625 123"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M650 120L647 118.5L647 121.5L650 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M650 117L650 123"/>
+	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="632.70001, 637.5, " y="115, ">
 			25
 	</text>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M695 120L710 120"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M695 120L698 118.5L698 121.5L695 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M695 117L695 123"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M710 120L707 118.5L707 121.5L710 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M710 117L710 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="698.49597, 701.70398, " y="115, ">
-			15
-	</text>
-	<rect fill="red" x="735" y="90" width="15" height="10"/>
-	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="735" y="90" width="15" height="10"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M710 120L735 120"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M710 120L713 118.5L713 121.5L710 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M710 117L710 123"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M735 120L732 118.5L732 121.5L735 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M735 117L735 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="717.70001, 722.5, " y="115, ">
+	<rect fill="red" x="650" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="650" y="90" width="25" height="10"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M650 120L675 120"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M650 120L653 118.5L653 121.5L650 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M650 117L650 123"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M675 120L672 118.5L672 121.5L675 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M675 117L675 123"/>
+	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="657.70001, 662.5, " y="115, ">
 			25
 	</text>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M735 120L750 120"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M735 120L738 118.5L738 121.5L735 120Z"/>
-	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M735 117L735 123"/>
+	<rect fill="red" x="675" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="675" y="90" width="25" height="10"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M675 120L700 120"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M675 120L678 118.5L678 121.5L675 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M675 117L675 123"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M700 120L697 118.5L697 121.5L700 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M700 117L700 123"/>
+	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="682.70001, 687.5, " y="115, ">
+			25
+	</text>
+	<rect fill="red" x="700" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="700" y="90" width="25" height="10"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M700 120L725 120"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M700 120L703 118.5L703 121.5L700 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M700 117L700 123"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M725 120L722 118.5L722 121.5L725 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M725 117L725 123"/>
+	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="707.70001, 712.5, " y="115, ">
+			25
+	</text>
+	<rect fill="red" x="725" y="90" width="25" height="10"/>
+	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="725" y="90" width="25" height="10"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M725 120L750 120"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M725 120L728 118.5L728 121.5L725 120Z"/>
+	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M725 117L725 123"/>
 	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M750 120L747 118.5L747 121.5L750 120Z"/>
 	<path fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" d="M750 117L750 123"/>
-	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="738.49597, 741.70398, " y="115, ">
-			15
+	<text font-size="8" font-family="PingFang SC, 蘋方-簡, 苹方-简" x="732.70001, 737.5, " y="115, ">
+			25
 	</text>
 	<rect fill="gray" x="750" y="85" width="100" height="15"/>
 	<rect fill="none" stroke="black" stroke-width="1" stroke-miterlimit="4" x="750" y="85" width="100" height="15"/>
