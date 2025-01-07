@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BlastDesign.tool
+namespace BlastDesign.tool.BlackBoxTest
 {
 
   /// <summary>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1500" height="300">
-	<rect fill="white" width="1500" height="300"/>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="2000" height="300">
+	<rect fill="white" width="2000" height="300"/>
 	<path fill="none" stroke="black" stroke-width="2" stroke-miterlimit="4" d="M50 100L850 100"/>
 	<path fill="none" stroke="red" stroke-width="1" stroke-miterlimit="4" d="M50 96L900 96"/>
 	<path fill="none" stroke="green" stroke-width="1" stroke-miterlimit="4" d="M50 93L900 93"/>

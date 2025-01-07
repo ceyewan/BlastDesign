@@ -37,9 +37,10 @@ public class Config
     public double InclinationAngle { get; set; } = 95; // 倾角
     // 炮孔装药结构参数，包括总长度、孔底加强段长度、炮孔堵塞段长度、装药段间隔长度、装药块长度
     public int[] PreSplitHoleChargeParameters { get; set; } = { 800, 60, 100, 25, 15 };
-    public int[] BufferHoleChargeParameters { get; set; } = { 800, 60, 100, 25, 15 };
+    public int[] BufferHoleChargeParameters { get; set; } = { 800, 0, 100, 0, 25 };
     public int[] MainBlastHoleChargeParameters { get; set; } = { 800, 60, 100, 25, 15 };
     public int BlastHoleIndex { get; set; } = 2; // 起爆炮孔序号，默认是最外面一排，序号从 1 开始
+    public bool IsMainBlastHoleSegmented { get; set; } = true; // 主爆孔是否分段，即分为两段
 
     // 实现 IDisposable 接口
     private bool disposed = false;
